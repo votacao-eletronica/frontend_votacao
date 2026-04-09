@@ -2,12 +2,9 @@
 import axios from 'axios'
 import { toast } from 'react-toastify'
 import { ToastError } from '../../components/alert/toastError'
-
-type User = {
-    id?: string
-    name?: string
-    email?: string
-} | null
+import { getStoredAuth, removeStoredAuthData, setStoreAuthData } from '../../utils/AuthDataStore'
+import type { User } from '../../types/User'
+import type { AuthData } from '../../types/AuthData'
 
 type Credentials = {
     email: string
@@ -16,35 +13,17 @@ type Credentials = {
 
 type AuthContextData = {
     token: string | null
-    user: User
+    user: User | null
     isAuthenticated: boolean
     login: (credentials: Credentials) => Promise<void>
     logout: () => void
 }
 
-const STORAGE_KEY = 'votacao.jwt.auth'
-
 export const AuthContext = createContext<AuthContextData | undefined>(undefined)
-
-function getStoredAuth() {
-    if (typeof window === 'undefined') return { token: null, user: null }
-
-    try {
-        const data = localStorage.getItem(STORAGE_KEY)
-        if (!data) return { token: null, user: null }
-        const parsed = JSON.parse(data) as { token: string; user: User }
-        if (!parsed?.token) return { token: null, user: null }
-
-        return { token: parsed.token, user: parsed.user ?? null }
-    } catch {
-        localStorage.removeItem(STORAGE_KEY)
-        return { token: null, user: null }
-    }
-}
 
 export function AuthProvider({ children }: PropsWithChildren) {
     const [token, setToken] = useState<string | null>(null)
-    const [user, setUser] = useState<User>(null)
+    const [user, setUser] = useState<User | null>(null)
 
     useEffect(() => {
         const stored = getStoredAuth()
@@ -59,10 +38,10 @@ export function AuthProvider({ children }: PropsWithChildren) {
                 password
             })
 
-            const data = response.data as { token: string, user: User }
+            const data = response.data as AuthData
             if (!data.token) throw new Error('Token JWT inválido ou ausente na resposta')
 
-            localStorage.setItem(STORAGE_KEY, JSON.stringify({ data }))
+            setStoreAuthData( data )
             setToken(data.token)
             setUser(data.user)
         } catch (error) {
@@ -84,7 +63,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
     }, [])
 
     const logout = useCallback(() => {
-        localStorage.removeItem(STORAGE_KEY)
+        removeStoredAuthData()
         setToken(null)
         setUser(null)
     }, [])

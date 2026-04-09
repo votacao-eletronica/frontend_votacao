@@ -1,7 +1,6 @@
 import { useContext } from 'react'
 import { AuthContext } from './context'
 
-
 export function useLogin () {
     const context = useContext(AuthContext)
     
