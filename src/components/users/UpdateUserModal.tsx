@@ -1,45 +1,61 @@
+import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { useCreateUsers } from '../../hooks/users/useCreateUser'
+import { useUpdateUser } from '../../hooks/users/useUpdateUser'
 import { useUserRoles } from '../../hooks/users/useUserRoles'
 import { Input } from '../form/input'
 import { Select } from '../form/Select'
 import { Button } from '../form/button'
 import { Modal } from '../ui/Modal'
+import type { User } from '../../types/User'
 
-const createUserSchema = z.object({
-    name: z.string().min(1, 'Nome é obrigatório'),
-    email: z.email('Email inválido'),
-    password: z.string().min(6, 'Senha deve ter pelo menos 6 caracteres'),
-    role_id: z.number().min(1, 'Selecione um papel'),
+const updateUserSchema = z.object({
+    name: z.string().min(1, 'Nome é obrigatório').optional(),
+    email: z.email('Email inválido').optional(),
+    role_id: z.number().min(1, 'Selecione um papel').optional(),
+}).refine((data) => data.name || data.email || data.role_id !== undefined, {
+    message: 'Pelo menos um campo deve ser preenchido',
+    path: ['name'],
 })
 
-type CreateUserForm = z.infer<typeof createUserSchema>
+type UpdateUserForm = z.infer<typeof updateUserSchema>
 
-interface CreateUserModalProps {
+interface UpdateUserModalProps {
     isOpen: boolean
     onClose: () => void
     onSuccess: () => void
+    user: User | null
 }
 
-export function CreateUserModal({ isOpen, onClose, onSuccess }: CreateUserModalProps) {
-    const { createUser, loading } = useCreateUsers()
+export function UpdateUserModal({ isOpen, onClose, onSuccess, user }: UpdateUserModalProps) {
+    const { updateUser, loading } = useUpdateUser()
     const { roles } = useUserRoles()
 
-    const { register, handleSubmit, formState: { errors }, reset } = useForm<CreateUserForm>({
-        resolver: zodResolver(createUserSchema)
+    const { register, handleSubmit, formState: { errors }, reset } = useForm<UpdateUserForm>({
+        resolver: zodResolver(updateUserSchema)
     })
 
-    const onSubmit = async (data: CreateUserForm) => {
-        await createUser(data)
+    useEffect(() => {
+        if (user) {
+            reset({
+                name: user.name,
+                email: user.email,
+                role_id: user.roles[0]?.id,
+            })
+        }
+    }, [user, reset])
+
+    const onSubmit = async (data: UpdateUserForm) => {
+        if (!user) return
+        await updateUser(user.id, data)
         reset()
         onSuccess()
         onClose()
     }
 
     return (
-        <Modal isOpen={isOpen} onClose={onClose} title="Criar Usuário">
+        <Modal isOpen={isOpen} onClose={onClose} title="Atualizar Usuário">
             <form onSubmit={handleSubmit(onSubmit)}>
                 <div className="mb-4">
                     <Input
@@ -59,15 +75,6 @@ export function CreateUserModal({ isOpen, onClose, onSuccess }: CreateUserModalP
                     />
                 </div>
                 <div className="mb-4">
-                    <Input
-                        name="password"
-                        label="Senha"
-                        type="password"
-                        formRegister={register('password')}
-                        caption={errors.password?.message}
-                    />
-                </div>
-                <div className="mb-4">
                     <Select
                         name="role_id"
                         label="Papel"
@@ -79,7 +86,7 @@ export function CreateUserModal({ isOpen, onClose, onSuccess }: CreateUserModalP
                 <div className="flex justify-end space-x-2">
                     <button type="button" onClick={onClose} className="px-4 py-2 bg-gray-300 rounded">Cancelar</button>
                     <Button
-                        text="Criar"
+                        text="Atualizar"
                         isLoading={loading}
                         disabled={loading}
                         type="submit"

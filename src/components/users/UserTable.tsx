@@ -3,9 +3,10 @@ import type { User } from '../../types/User'
 type UserTableProps = {
     users: User[]
     loading?: boolean
+    onEdit?: (user: User) => void
 }
 
-export function UserTable({ users, loading }: UserTableProps) {
+export function UserTable({ users, loading, onEdit }: UserTableProps) {
     if (loading) {
         return (
             <div className="flex justify-center items-center py-8">
@@ -31,6 +32,7 @@ export function UserTable({ users, loading }: UserTableProps) {
                         <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Nome</th>
                         <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Email</th>
                         <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Funções</th>
+                        <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Ações</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -50,6 +52,14 @@ export function UserTable({ users, loading }: UserTableProps) {
                                         </span>
                                     ))}
                                 </div>
+                            </td>
+                            <td className="px-6 py-3 text-sm">
+                                <button
+                                    onClick={() => onEdit?.(user)}
+                                    className="px-3 py-1 bg-blue-500 text-white rounded text-xs hover:bg-blue-600"
+                                >
+                                    Editar
+                                </button>
                             </td>
                         </tr>
                     ))}
