@@ -1,5 +1,5 @@
 import type { User } from '../../types/User'
-import { PencilSimple, Trash } from 'phosphor-react'
+import { PencilSimple } from 'phosphor-react'
 import { IconButton } from '../form/IconButton'
 
 type UserTableProps = {
@@ -9,7 +9,7 @@ type UserTableProps = {
     onDelete?: (userId: number) => void
 }
 
-export function UserTable({ users, loading, onEdit, onDelete }: UserTableProps) {
+export function UserTable({ users, loading, onEdit }: UserTableProps) {
     if (loading) {
         return (
             <div className="flex justify-center items-center py-8">
@@ -47,12 +47,12 @@ export function UserTable({ users, loading, onEdit, onDelete }: UserTableProps) 
                                         onClick={() => onEdit?.(user)}
                                         title="Editar usuário"
                                     />
-                                    <IconButton
+                                    {/* <IconButton
                                         icon={<Trash size={20} />}
                                         onClick={() => onDelete?.(user.id)}
                                         title="Deletar usuário"
                                         variant="danger"
-                                    />
+                                    /> */}
                                 </div>
                             </td>
                             <td className="px-6 py-3 text-sm text-gray-900">{user.name}</td>

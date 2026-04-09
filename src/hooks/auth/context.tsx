@@ -1,4 +1,4 @@
-﻿import { createContext, useCallback, useEffect, useMemo, useState, type PropsWithChildren } from 'react'
+﻿import { createContext, useCallback, useContext, useEffect, useMemo, useState, type PropsWithChildren } from 'react'
 import axios from 'axios'
 import { toast } from 'react-toastify'
 import { ToastError } from '../../components/alert/toastError'
@@ -80,4 +80,12 @@ export function AuthProvider({ children }: PropsWithChildren) {
             {children}
         </AuthContext.Provider>
     )
+}
+
+export function useAuth() {
+    const context = useContext(AuthContext)
+    if (!context) {
+        throw new Error('useAuth must be used within an AuthProvider')
+    }
+    return context
 }
