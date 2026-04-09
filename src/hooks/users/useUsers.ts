@@ -8,24 +8,28 @@ export function useUsers() {
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
 
-    useEffect(() => {
-        const fetchUsers = async () => {
-            try {
-                setLoading(true)
-                const data = await userService.getUsers()
-                setUsers(data)
-                setError(null)
-            } catch (err) {
-                const errorMessage = err instanceof Error ? err.message : 'Erro ao carregar usuários'
-                setError(errorMessage)
-                toast.error(errorMessage)
-            } finally {
-                setLoading(false)
-            }
+    const fetchUsers = async () => {
+        try {
+            setLoading(true)
+            const data = await userService.getUsers()
+            setUsers(data)
+            setError(null)
+        } catch (err) {
+            const errorMessage = err instanceof Error ? err.message : 'Erro ao carregar usuários'
+            setError(errorMessage)
+            toast.error(errorMessage)
+        } finally {
+            setLoading(false)
         }
+    }
 
+    useEffect(() => {
         fetchUsers()
     }, [])
 
-    return { users, loading, error }
+    const refetch = () => {
+        fetchUsers()
+    }
+
+    return { users, loading, error, refetch }
 }

@@ -9,3 +9,10 @@ export interface User {
     email: string
     roles: Role[]
 }
+
+export type CreateUser = {
+    "name": string
+    "email": string
+    "password": string
+    "role_id": number
+}
