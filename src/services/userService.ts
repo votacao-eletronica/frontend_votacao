@@ -16,5 +16,9 @@ export const userService = {
         const api = createApiInstance()
         const response = await api.put<{data: User}>(`/users/${id}`, data)
         return response.data.data;
-    }
+    },
+    async deleteUser(id: number) {
+        const api = createApiInstance()
+        await api.delete(`/users/${id}`)
+    },
 }

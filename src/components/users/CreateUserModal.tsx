@@ -77,7 +77,12 @@ export function CreateUserModal({ isOpen, onClose, onSuccess }: CreateUserModalP
                     />
                 </div>
                 <div className="flex justify-end space-x-2">
-                    <button type="button" onClick={onClose} className="px-4 py-2 bg-gray-300 rounded">Cancelar</button>
+                    <Button
+                        text="Cancelar"
+                        variant="secondary"
+                        type="button"
+                        onClick={onClose}
+                    />
                     <Button
                         text="Criar"
                         isLoading={loading}
