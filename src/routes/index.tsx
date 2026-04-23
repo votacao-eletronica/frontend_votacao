@@ -2,6 +2,7 @@ import { createBrowserRouter } from "react-router";
 import Login from "../views/login";
 import { Users } from "../views/users";
 import { Parties } from "../views/parties";
+import { Proposals } from "../views/proposals";
 import { Layout } from "../components/layout/Layout";
 import { PrivateRoute } from "../components/auth/privateRoute";
 import { PublicRoute } from "../components/auth/publicRoute";
@@ -35,6 +36,10 @@ export const router = createBrowserRouter([
             {
                 path: "parties",
                 Component: Parties,
+            },
+            {
+                path: "proposals",
+                Component: Proposals,
             },
         ],
     },
