@@ -25,17 +25,15 @@ export function Users() {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+        <div className="h-full bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
             <div className="max-w-6xl mx-auto">
-                <div className="mb-8">
+                <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <h1 className="text-3xl font-bold text-gray-900">Usuários</h1>
-                    <div className="mt-4 w-48">
-                        <Button
-                            text="Criar Usuário"
-                            type="button"
-                            onClick={() => setIsCreateModalOpen(true)}
-                        />
-                    </div>
+                    <Button
+                        text="Criar Usuário"
+                        type="button"
+                        onClick={() => setIsCreateModalOpen(true)}
+                    />
                 </div>
 
                 {error && (
