@@ -1,47 +1,62 @@
+import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { useCreateProposal } from '../../hooks/proposals/useCreateProposal'
+import { useUpdateProposal } from '../../hooks/proposals/useUpdateProposal'
 import { Input } from '../form/input'
 import { Button } from '../form/button'
 import { Modal } from '../ui/Modal'
 import { Select } from '../form/Select'
 import { useSessions } from '../../hooks/sessions/useSessions'
+import type { Proposal } from '../../types/Proposal'
 
-const createProposalSchema = z.object({
+const updateProposalSchema = z.object({
+    id: z.number(),
     title: z.string().min(1, 'Título é obrigatório'),
     description: z.string().min(1, 'Descrição é obrigatória'),
     voting_session_id: z.number().optional()
 })
 
-type CreateProposalForm = z.infer<typeof createProposalSchema>
+type UpdateProposalForm = z.infer<typeof updateProposalSchema>
 
-interface CreateProposalModalProps {
+interface UpdateProposalModalProps {
     isOpen: boolean
     onClose: () => void
     onSuccess: () => void
+    proposal: Proposal | null
 }
 
-export function CreateProposalModal({ isOpen, onClose, onSuccess }: CreateProposalModalProps) {
-    const { createProposal, loading } = useCreateProposal()
-    const { sessions } = useSessions();
-    const { register, handleSubmit, formState: { errors }, reset } = useForm<CreateProposalForm>({
-        resolver: zodResolver(createProposalSchema),
+export function UpdateProposalModal({ isOpen, onClose, onSuccess, proposal }: UpdateProposalModalProps) {
+    const { updateProposal, loading } = useUpdateProposal()
+    const { sessions } = useSessions()
+    const { register, handleSubmit, formState: { errors }, reset, setValue } = useForm<UpdateProposalForm>({
+        resolver: zodResolver(updateProposalSchema),
         defaultValues: {
-            title: '',
-            description: '',
+            id: proposal?.id,
+            title: proposal?.title || '',
+            description: proposal?.description || '',
+            voting_session_id: proposal?.voting_session.id ?? undefined,
         },
     })
 
-    const onSubmit = async (data: CreateProposalForm) => {
-        await createProposal(data)
+    useEffect(() => {
+        if (proposal && isOpen) {
+            setValue('id', proposal.id)
+            setValue('title', proposal.title)
+            setValue('description', proposal.description)
+            setValue('voting_session_id', proposal.voting_session.id ?? undefined)
+        }
+    }, [proposal, isOpen, setValue])
+
+    const onSubmit = async (data: UpdateProposalForm) => {
+        await updateProposal(data)
         reset()
         onSuccess()
         onClose()
     }
 
     return (
-        <Modal isOpen={isOpen} onClose={onClose} title="Criar Proposta">
+        <Modal isOpen={isOpen} onClose={onClose} title="Atualizar Proposta">
             <form onSubmit={handleSubmit(onSubmit)}>
                 <div className="mb-4">
                     <Input
@@ -56,7 +71,7 @@ export function CreateProposalModal({ isOpen, onClose, onSuccess }: CreatePropos
                         name="voting_session_id"
                         label="Sessão"
                         formRegister={register('voting_session_id', { valueAsNumber: true })}
-                        options={[{ value: '', label: 'Selecione' }, ...sessions.map(sessions => ({ value: sessions.id, label: sessions.title }))]}
+                        options={[{ value: '', label: 'Selecione' }, ...sessions.map(session => ({ value: session.id, label: session.title }))]}
                         caption={errors.voting_session_id?.message}
                     />
                 </div>
@@ -77,7 +92,7 @@ export function CreateProposalModal({ isOpen, onClose, onSuccess }: CreatePropos
                         onClick={onClose}
                     />
                     <Button
-                        text="Criar"
+                        text="Atualizar"
                         isLoading={loading}
                         disabled={loading}
                         type="submit"

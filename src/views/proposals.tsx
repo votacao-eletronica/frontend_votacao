@@ -2,11 +2,25 @@ import { useState } from 'react'
 import { useProposals } from '../hooks/proposals/useProposals'
 import { ProposalTable } from '../components/proposals/ProposalTable'
 import { CreateProposalModal } from '../components/proposals/CreateProposalModal'
+import { UpdateProposalModal } from '../components/proposals/UpdateProposalModal'
 import { Button } from '../components/form/button'
+import type { Proposal } from '../types/Proposal'
 
 export function Proposals() {
     const { proposals, loading, error, refetch } = useProposals()
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
+    const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false)
+    const [selectedProposal, setSelectedProposal] = useState<Proposal | null>(null)
+
+    const handleEditProposal = (proposal: Proposal) => {
+        setSelectedProposal(proposal)
+        setIsUpdateModalOpen(true)
+    }
+
+    const handleCloseUpdateModal = () => {
+        setIsUpdateModalOpen(false)
+        setSelectedProposal(null)
+    }
 
     return (
         <div className="h-full bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
@@ -28,7 +42,11 @@ export function Proposals() {
                 )}
 
                 <div className="bg-white rounded-lg shadow">
-                    <ProposalTable proposals={proposals} loading={loading} />
+                    <ProposalTable 
+                        proposals={proposals} 
+                        loading={loading}
+                        onEdit={handleEditProposal}
+                    />
                 </div>
             </div>
 
@@ -36,6 +54,13 @@ export function Proposals() {
                 isOpen={isCreateModalOpen}
                 onClose={() => setIsCreateModalOpen(false)}
                 onSuccess={refetch}
+            />
+
+            <UpdateProposalModal
+                isOpen={isUpdateModalOpen}
+                onClose={handleCloseUpdateModal}
+                onSuccess={refetch}
+                proposal={selectedProposal}
             />
         </div>
     )

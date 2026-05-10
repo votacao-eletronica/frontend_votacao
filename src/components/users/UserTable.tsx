@@ -31,30 +31,15 @@ export function UserTable({ users, loading, onEdit }: UserTableProps) {
             <table className="min-w-full bg-white border border-gray-300 rounded-lg shadow-sm">
                 <thead className="bg-gray-100 border-b border-gray-300">
                     <tr>
-                        <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Ações</th>
                         <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Nome</th>
                         <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Email</th>
                         <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Funções</th>
+                        <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Ações</th>
                     </tr>
                 </thead>
                 <tbody>
                     {users.map((user) => (
                         <tr key={user.id} className="border-b border-gray-300 hover:bg-gray-50">
-                            <td className="px-6 py-3 text-sm">
-                                <div className="flex gap-2">
-                                    <IconButton
-                                        icon={<PencilSimple size={20} />}
-                                        onClick={() => onEdit?.(user)}
-                                        title="Editar usuário"
-                                    />
-                                    {/* <IconButton
-                                        icon={<Trash size={20} />}
-                                        onClick={() => onDelete?.(user.id)}
-                                        title="Deletar usuário"
-                                        variant="danger"
-                                    /> */}
-                                </div>
-                            </td>
                             <td className="px-6 py-3 text-sm text-gray-900">{user.name}</td>
                             <td className="px-6 py-3 text-sm text-gray-600">{user.email}</td>
                             <td className="px-6 py-3 text-sm">
@@ -67,6 +52,22 @@ export function UserTable({ users, loading, onEdit }: UserTableProps) {
                                             {role.name}
                                         </span>
                                     ))}
+                                </div>
+                            </td>
+                            <td className="px-6 py-3 text-sm">
+                                <div className="flex gap-2">
+                                    <IconButton
+                                        icon={<PencilSimple size={20} />}
+                                        onClick={() => onEdit?.(user)}
+                                        title="Editar usuário"
+                                        variant='primary'
+                                    />
+                                    {/* <IconButton
+                                        icon={<Trash size={20} />}
+                                        onClick={() => onDelete?.(user.id)}
+                                        title="Deletar usuário"
+                                        variant="danger"
+                                    /> */}
                                 </div>
                             </td>
                         </tr>

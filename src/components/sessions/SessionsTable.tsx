@@ -1,16 +1,16 @@
 import type { Session } from '../../types/Session'
 import { IconButton } from '../form/IconButton'
-import { Trash } from 'phosphor-react'
+import { PencilSimple, Trash } from 'phosphor-react'
 
 type SessionsTableProps = {
     sessions: Session[]
     loading?: boolean
-    onSessionClick?: (session: Session) => void
-    onDelete?: (session: Session) => void
+    onEdit: (session: Session) => void
+    onDelete: (session: Session) => void
     deleting?: boolean
 }
 
-export function SessionsTable({ sessions, loading, onSessionClick, onDelete, deleting }: SessionsTableProps) {
+export function SessionsTable({ sessions, loading, onEdit, onDelete, deleting }: SessionsTableProps) {
     if (loading) {
         return (
             <div className="flex justify-center items-center py-8">
@@ -63,8 +63,7 @@ export function SessionsTable({ sessions, loading, onSessionClick, onDelete, del
                     {sessions.map((session) => (
                         <tr
                             key={session.id}
-                            className={`border-b border-gray-300 hover:bg-gray-50 ${onSessionClick ? 'cursor-pointer' : ''}`}
-                            onClick={() => onSessionClick?.(session)}
+                            className={`border-b border-gray-300`}
                         >
                             <td className="px-6 py-3 text-sm text-gray-900">{session.title}</td>
                             <td className="px-6 py-3 text-sm text-gray-600">{formatDate(session.date)}</td>
@@ -83,7 +82,7 @@ export function SessionsTable({ sessions, loading, onSessionClick, onDelete, del
                                 <div className="flex gap-2">
                                     {onDelete && (
                                         <IconButton
-                                            icon={<Trash size={16} />}
+                                            icon={<Trash size={20} />}
                                             variant="danger"
                                             title="Excluir sessão"
                                             onClick={(e: any) => {
@@ -93,6 +92,15 @@ export function SessionsTable({ sessions, loading, onSessionClick, onDelete, del
                                             disabled={deleting}
                                         />
                                     )}
+                                    <IconButton
+                                        icon={<PencilSimple size={20} />}
+                                        variant="primary"
+                                        title="Editar proposta"
+                                        onClick={(e: any) => {
+                                            e.stopPropagation()
+                                            onEdit(session)
+                                        }}
+                                    />
                                 </div>
                             </td>
                         </tr>

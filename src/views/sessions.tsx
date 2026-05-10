@@ -44,7 +44,7 @@ export function Sessions() {
                     <SessionsTable 
                         sessions={sessions} 
                         loading={loading} 
-                        onSessionClick={handleSessionClick}
+                        onEdit={handleSessionClick}
                         onDelete={handleDelete}
                         deleting={deleting}
                     />

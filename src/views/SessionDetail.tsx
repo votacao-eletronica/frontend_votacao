@@ -61,7 +61,7 @@ export function SessionDetail() {
                                         variant="primary"
                                     />
                                 )}
-                                {session.status.toLowerCase() === 'iniciada' && (
+                                {session.status.toLowerCase() === 'aberta' && (
                                     <Button
                                         text={openingSession ? 'Encerrando...' : 'Encerrar Sessão'}
                                         // isLoading={openingSession}
