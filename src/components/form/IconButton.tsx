@@ -2,7 +2,7 @@ import type { ReactNode } from 'react'
 
 type IconButtonProps = {
     icon: ReactNode
-    onClick?: () => void
+    onClick?: (e: any) => void
     title?: string
     disabled?: boolean
     variant?: 'primary' | 'secondary' | 'danger'
