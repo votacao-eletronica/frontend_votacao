@@ -8,6 +8,11 @@ import { SessionDetail } from "../views/SessionDetail";
 import { Layout } from "../components/layout/Layout";
 import { PrivateRoute } from "../components/auth/privateRoute";
 import { PublicRoute } from "../components/auth/publicRoute";
+import { CouncilDashboard } from "../views/CouncilDashboard";
+import { VotingRoom } from "../views/VotingRoom";
+import { Home } from "../views/Home";
+import { SessionHistory } from "../views/SessionHistory";
+import { CouncilHistory } from "../views/CouncilHistory";
 
 
 export const router = createBrowserRouter([
@@ -20,6 +25,14 @@ export const router = createBrowserRouter([
         ),
     },
     {
+        path: "/council/sessions/:id",
+        Component: () => (
+            <PrivateRoute>
+                <VotingRoom />
+            </PrivateRoute>
+        ),
+    },
+    {
         path: "/",
         Component: () => (
             <PrivateRoute>
@@ -29,7 +42,7 @@ export const router = createBrowserRouter([
         children: [
             {
                 index: true,
-                Component: Users,
+                Component: Home,
             },
             {
                 path: "users",
@@ -50,6 +63,18 @@ export const router = createBrowserRouter([
             {
                 path: "sessions/:id",
                 Component: SessionDetail,
+            },
+            {
+                path: "sessions/:id/history",
+                Component: SessionHistory,
+            },
+            {
+                path: "council",
+                Component: CouncilDashboard,
+            },
+            {
+                path: "council/history",
+                Component: CouncilHistory,
             },
         ],
     },

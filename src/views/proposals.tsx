@@ -5,9 +5,10 @@ import { CreateProposalModal } from '../components/proposals/CreateProposalModal
 import { UpdateProposalModal } from '../components/proposals/UpdateProposalModal'
 import { Button } from '../components/form/button'
 import type { Proposal } from '../types/Proposal'
+import { Pagination } from '../components/ui/Pagination'
 
 export function Proposals() {
-    const { proposals, loading, error, refetch } = useProposals()
+    const { proposals, loading, error, refetch, pagination, setPage } = useProposals()
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
     const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false)
     const [selectedProposal, setSelectedProposal] = useState<Proposal | null>(null)
@@ -47,6 +48,7 @@ export function Proposals() {
                         loading={loading}
                         onEdit={handleEditProposal}
                     />
+                    <Pagination meta={pagination} loading={loading} onPageChange={setPage} />
                 </div>
             </div>
 

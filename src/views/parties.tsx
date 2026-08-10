@@ -3,9 +3,10 @@ import { useParties } from '../hooks/parties/useParties'
 import { PoliticalPartyTable } from '../components/parties/PoliticalPartyTable'
 import { CreatePartyModal } from '../components/parties/CreatePartyModal'
 import { Button } from '../components/form/button'
+import { Pagination } from '../components/ui/Pagination'
 
 export function Parties() {
-    const { parties, loading, error, refetch } = useParties()
+    const { parties, loading, error, refetch, pagination, setPage } = useParties()
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
 
     return (
@@ -29,6 +30,7 @@ export function Parties() {
 
                 <div className="bg-white rounded-lg shadow">
                     <PoliticalPartyTable parties={parties} loading={loading} />
+                    <Pagination meta={pagination} loading={loading} onPageChange={setPage} />
                 </div>
             </div>
 

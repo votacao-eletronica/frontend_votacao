@@ -1,11 +1,12 @@
 import type { CreateUser, UpdateUser, User } from '../types/User'
 import { createApiInstance } from './httpService'
+import type { PaginatedResponse } from '../types/Pagination'
 
 export const userService = {
-    async getUsers(): Promise<User[]> {
+    async getUsers(page = 1, perPage = 10): Promise<PaginatedResponse<User>> {
         const api = createApiInstance()
-        const response = await api.get<{data: User[]}>('/users')
-        return response.data.data;
+        const response = await api.get<PaginatedResponse<User>>('/users', { params: { page, per_page: perPage } })
+        return response.data
     },
     async createUser(data: CreateUser) {
         const api = createApiInstance()

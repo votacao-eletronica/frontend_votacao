@@ -1,8 +1,10 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import type { Session } from '../../types/Session'
 import { sessionService } from '../../services/sessionService'
 import { toast } from 'react-toastify'
 import { useNavigate } from 'react-router'
+import { getStoredAuth } from '../../utils/AuthDataStore'
+import { getEcho } from '../../services/echoService'
 
 export function useSession(sessionId: number | undefined) {
     const [session, setSession] = useState<Session | null>(null)
@@ -10,9 +12,10 @@ export function useSession(sessionId: number | undefined) {
     const [error, setError] = useState<string | null>(null)
     const [openingSession, setOpeningSession] = useState(false)
     const [deletingSession, setDeletingSession] = useState(false)
+    const [closingSession, setClosingSession] = useState(false)
     const navigate = useNavigate()
 
-    const fetchSession = async () => {
+    const fetchSession = useCallback(async () => {
         if (!sessionId) return
         try {
             setLoading(true)
@@ -26,11 +29,28 @@ export function useSession(sessionId: number | undefined) {
         } finally {
             setLoading(false)
         }
-    }
+    }, [sessionId])
 
     useEffect(() => {
         fetchSession()
-    }, [sessionId])
+    }, [fetchSession])
+
+    useEffect(() => {
+        const { token } = getStoredAuth()
+        if (!token || !sessionId) return
+
+        const echo = getEcho(token)
+        const channelName = `voting-session.${sessionId}`
+        const channel = echo.private(channelName)
+
+        channel.listen('.attendance.created', () => {
+            fetchSession()
+        })
+
+        return () => {
+            echo.leave(channelName)
+        }
+    }, [fetchSession, sessionId])
 
     const refetch = () => {
         fetchSession()
@@ -68,5 +88,19 @@ export function useSession(sessionId: number | undefined) {
         }
     }
 
-    return { session, loading, error, refetch, openingSession, handleOpenSession, deletingSession, handleDeleteSession }
+    const handleCloseSession = async () => {
+        if (!sessionId) return
+        try {
+            setClosingSession(true)
+            await sessionService.closeSession(sessionId)
+            toast.success('Sessão finalizada com sucesso')
+            navigate(`/sessions/${sessionId}/history`)
+        } catch (err) {
+            toast.error(err instanceof Error ? err.message : 'Erro ao finalizar sessão')
+        } finally {
+            setClosingSession(false)
+        }
+    }
+
+    return { session, loading, error, refetch, openingSession, handleOpenSession, closingSession, handleCloseSession, deletingSession, handleDeleteSession }
 }

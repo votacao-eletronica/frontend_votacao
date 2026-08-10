@@ -1,11 +1,12 @@
-import { useParams } from 'react-router'
+import { useNavigate, useParams } from 'react-router'
 import { useSession } from '../hooks/sessions/useSession'
 import { Button } from '../components/form/button'
 
 export function SessionDetail() {
     const { id } = useParams<{ id: string }>()
     const sessionId = id ? parseInt(id) : undefined
-    const { deletingSession, error, handleDeleteSession, handleOpenSession, loading, openingSession, session} = useSession(sessionId)
+    const navigate = useNavigate()
+    const { closingSession, deletingSession, error, handleCloseSession, handleDeleteSession, handleOpenSession, loading, openingSession, session} = useSession(sessionId)
 
     if (loading) {
         return (
@@ -63,11 +64,14 @@ export function SessionDetail() {
                                 )}
                                 {session.status.toLowerCase() === 'aberta' && (
                                     <Button
-                                        text={openingSession ? 'Encerrando...' : 'Encerrar Sessão'}
-                                        // isLoading={openingSession}
-                                        // onClick={handleOpenSession}
+                                        text={closingSession ? 'Finalizando...' : 'Finalizar Sessão'}
+                                        isLoading={closingSession}
+                                        onClick={handleCloseSession}
                                         variant="primary"
                                     />
+                                )}
+                                {session.status.toLowerCase() === 'fechada' && (
+                                    <Button text="Ver histórico" onClick={() => navigate(`/sessions/${session.id}/history`)} variant="primary" />
                                 )}
                                 <Button
                                     text={deletingSession ? 'Excluindo...' : 'Excluir Sessão'}

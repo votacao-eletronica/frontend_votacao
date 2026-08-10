@@ -28,7 +28,7 @@ interface UpdateProposalModalProps {
 
 export function UpdateProposalModal({ isOpen, onClose, onSuccess, proposal }: UpdateProposalModalProps) {
     const { updateProposal, loading } = useUpdateProposal()
-    const { sessions } = useSessions()
+    const { sessions } = useSessions(100)
     const { register, handleSubmit, formState: { errors }, reset, setValue } = useForm<UpdateProposalForm>({
         resolver: zodResolver(updateProposalSchema),
         defaultValues: {

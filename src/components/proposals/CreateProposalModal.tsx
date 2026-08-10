@@ -24,7 +24,7 @@ interface CreateProposalModalProps {
 
 export function CreateProposalModal({ isOpen, onClose, onSuccess }: CreateProposalModalProps) {
     const { createProposal, loading } = useCreateProposal()
-    const { sessions } = useSessions();
+    const { sessions } = useSessions(100);
     const { register, handleSubmit, formState: { errors }, reset } = useForm<CreateProposalForm>({
         resolver: zodResolver(createProposalSchema),
         defaultValues: {

@@ -6,9 +6,10 @@ import { CreateUserModal } from '../components/users/CreateUserModal'
 import { UpdateUserModal } from '../components/users/UpdateUserModal'
 import { Button } from '../components/form/button'
 import type { User } from '../types/User'
+import { Pagination } from '../components/ui/Pagination'
 
 export function Users() {
-    const { users, loading, error, refetch } = useUsers()
+    const { users, loading, error, refetch, pagination, setPage } = useUsers()
     const { deleteUser } = useDeleteUser()
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
     const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false)
@@ -44,6 +45,7 @@ export function Users() {
 
                 <div className="bg-white rounded-lg shadow">
                     <UserTable users={users} loading={loading} onEdit={handleEdit} onDelete={handleDelete} />
+                    <Pagination meta={pagination} loading={loading} onPageChange={setPage} />
                 </div>
                 <CreateUserModal isOpen={isCreateModalOpen} onClose={() => setIsCreateModalOpen(false)} onSuccess={refetch} />
                 <UpdateUserModal isOpen={isUpdateModalOpen} onClose={() => setIsUpdateModalOpen(false)} onSuccess={refetch} user={editingUser} />

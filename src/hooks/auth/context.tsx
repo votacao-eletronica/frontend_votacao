@@ -5,6 +5,7 @@ import { ToastError } from '../../components/alert/toastError'
 import { getStoredAuth, removeStoredAuthData, setStoreAuthData } from '../../utils/AuthDataStore'
 import type { User } from '../../types/User'
 import type { AuthData } from '../../types/AuthData'
+import { disconnectEcho } from '../../services/echoService'
 
 type Credentials = {
     email: string
@@ -63,6 +64,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
     }, [])
 
     const logout = useCallback(() => {
+        disconnectEcho()
         removeStoredAuthData()
         setToken(null)
         setUser(null)

@@ -5,10 +5,11 @@ import { SessionsTable } from '../components/sessions/SessionsTable'
 import { CreateSessionModal } from '../components/sessions/CreateSessionModal'
 import { Button } from '../components/form/button'
 import type { Session } from '../types/Session'
+import { Pagination } from '../components/ui/Pagination'
 
 export function Sessions() {
     const navigate = useNavigate()
-    const { sessions, loading, error, refetch, deleteSession, deleting } = useSessions()
+    const { sessions, loading, error, refetch, deleteSession, deleting, pagination, setPage } = useSessions()
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
 
     const handleSessionClick = (session: Session) => {
@@ -48,6 +49,7 @@ export function Sessions() {
                         onDelete={handleDelete}
                         deleting={deleting}
                     />
+                    <Pagination meta={pagination} loading={loading} onPageChange={setPage} />
                 </div>
             </div>
 
