@@ -23,8 +23,8 @@ type AuthContextData = {
 export const AuthContext = createContext<AuthContextData | undefined>(undefined)
 
 export function AuthProvider({ children }: PropsWithChildren) {
-    const [token, setToken] = useState<string | null>(null)
-    const [user, setUser] = useState<User | null>(null)
+    const [token, setToken] = useState<string | null>(() => getStoredAuth().token)
+    const [user, setUser] = useState<User | null>(() => getStoredAuth().user)
 
     useEffect(() => {
         const stored = getStoredAuth()

@@ -13,6 +13,7 @@ import { VotingRoom } from "../views/VotingRoom";
 import { Home } from "../views/Home";
 import { SessionHistory } from "../views/SessionHistory";
 import { CouncilHistory } from "../views/CouncilHistory";
+import { SessionPresentation } from "../views/SessionPresentation";
 
 
 export const router = createBrowserRouter([
@@ -29,6 +30,14 @@ export const router = createBrowserRouter([
         Component: () => (
             <PrivateRoute>
                 <VotingRoom />
+            </PrivateRoute>
+        ),
+    },
+    {
+        path: "/sessions/:id/presentation",
+        Component: () => (
+            <PrivateRoute>
+                <SessionPresentation />
             </PrivateRoute>
         ),
     },

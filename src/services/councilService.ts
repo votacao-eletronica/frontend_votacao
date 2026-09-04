@@ -1,4 +1,4 @@
-import type { ClosedCouncilSession, CouncilSession, OpenCouncilSession, VotingChoice } from '../types/Council'
+import type { ClosedCouncilSession, CouncilSession, OpenCouncilSession, PresentationSession, VotingChoice } from '../types/Council'
 import type { PaginatedResponse } from '../types/Pagination'
 import { createApiInstance } from './httpService'
 
@@ -15,6 +15,11 @@ export const councilService = {
 
     async getSession(sessionId: number): Promise<CouncilSession> {
         const response = await createApiInstance().get<{ data: CouncilSession }>(`/council/sessions/${sessionId}`)
+        return response.data.data
+    },
+
+    async getPresentation(sessionId: number): Promise<PresentationSession> {
+        const response = await createApiInstance().get<{ data: PresentationSession }>(`/sessions/${sessionId}/presentation`)
         return response.data.data
     },
 

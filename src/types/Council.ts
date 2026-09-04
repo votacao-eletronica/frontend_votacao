@@ -24,6 +24,17 @@ export type CouncilSession = OpenCouncilSession & {
 
 export type CouncilMember = { id: number; name: string }
 
+export type NominalVote = { user_id: number; user_name: string; vote: VotingChoice }
+
+export type PresentationProposition = Omit<VotingProposition, 'user_vote'> & {
+    votes: { yes: number; no: number; abstentions: number; total: number }
+    nominal_votes: NominalVote[]
+}
+
+export type PresentationSession = Omit<CouncilSession, 'propositions'> & {
+    propositions: PresentationProposition[]
+}
+
 export type ClosedCouncilSession = {
     id: number
     title: string

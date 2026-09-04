@@ -1,6 +1,7 @@
 import { useNavigate, useParams } from 'react-router'
 import { useSession } from '../hooks/sessions/useSession'
 import { Button } from '../components/form/button'
+import { MonitorPlay } from 'phosphor-react'
 
 export function SessionDetail() {
     const { id } = useParams<{ id: string }>()
@@ -54,6 +55,13 @@ export function SessionDetail() {
                         </div>
                         <div className="md:col-span-2">
                             <div className="flex gap-4">
+                                <button
+                                    type="button"
+                                    onClick={() => window.open(`/sessions/${session.id}/presentation`, '_blank', 'noopener,noreferrer')}
+                                    className="flex items-center gap-2 rounded-md bg-slate-900 px-4 py-2 font-semibold text-white transition hover:bg-slate-700"
+                                >
+                                    <MonitorPlay size={20} /> Apresentar na TV
+                                </button>
                                 {session.status.toLowerCase() === 'agendada' && (
                                     <Button
                                         text={openingSession ? 'Abrindo...' : 'Abrir Sessão'}
