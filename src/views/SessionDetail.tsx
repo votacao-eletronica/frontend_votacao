@@ -63,12 +63,19 @@ export function SessionDetail() {
                                     />
                                 )}
                                 {session.status.toLowerCase() === 'aberta' && (
-                                    <Button
-                                        text={closingSession ? 'Finalizando...' : 'Finalizar Sessão'}
-                                        isLoading={closingSession}
-                                        onClick={handleCloseSession}
-                                        variant="primary"
-                                    />
+                                    <>
+                                        <Button
+                                            text="Painel de votação"
+                                            onClick={() => window.open(`/sessions/${session.id}/presentation`, '_blank')}
+                                            variant="primary"
+                                        />
+                                        <Button
+                                            text={closingSession ? 'Finalizando...' : 'Finalizar Sessão'}
+                                            isLoading={closingSession}
+                                            onClick={handleCloseSession}
+                                            variant="primary"
+                                        />
+                                    </>
                                 )}
                                 {session.status.toLowerCase() === 'fechada' && (
                                     <Button text="Ver histórico" onClick={() => navigate(`/sessions/${session.id}/history`)} variant="primary" />
