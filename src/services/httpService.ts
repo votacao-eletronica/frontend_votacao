@@ -5,8 +5,7 @@ import type { Headers } from "../types/HTTP"
 export function createApiInstance() {
     const authData = getStoredAuth()
 
-    let headers: Headers = {
-        "Content-Type": "application/json",
+    const headers: Headers = {
         "Accept": "application/json"
     }
 

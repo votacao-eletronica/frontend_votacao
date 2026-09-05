@@ -12,10 +12,13 @@ export function useCreateUsers() {
             setLoading(true)
             await userService.createUser(data)
             setError(null)
+            toast.success('Usuário criado com sucesso!')
+            return true
         } catch (err) {
             const errorMessage = err instanceof Error ? err.message : 'Erro ao carregar usuários'
             setError(errorMessage)
             toast.error(errorMessage)
+            return false
         } finally {
             setLoading(false)
         }

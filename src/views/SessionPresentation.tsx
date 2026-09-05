@@ -181,7 +181,11 @@ export function SessionPresentation() {
                                     <div className="grid gap-3 xl:grid-cols-2">
                                         {votes.map(vote => (
                                             <div key={vote.user_id} className="flex items-center gap-3 rounded-2xl border border-white/10 bg-slate-950/35 p-4 shadow-lg transition duration-500 animate-[pulse_700ms_ease-out_1]">
-                                                <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-slate-950/60 text-lg font-black ${column.accent}`}>{vote.user_name.charAt(0).toUpperCase()}</span>
+                                                {vote.user_photo ? (
+                                                    <img src={vote.user_photo} alt={`Foto de ${vote.user_name}`} className="h-11 w-11 shrink-0 rounded-full object-cover" />
+                                                ) : (
+                                                    <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-slate-950/60 text-lg font-black ${column.accent}`}>{vote.user_name.charAt(0).toUpperCase()}</span>
+                                                )}
                                                 <span className="text-base font-bold leading-tight lg:text-lg">{vote.user_name}</span>
                                             </div>
                                         ))}
