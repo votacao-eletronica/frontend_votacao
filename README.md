@@ -34,6 +34,16 @@ npm run dev
 
 O projeto estará disponível em `http://localhost:5173/`.
 
+O servidor também aceita conexões da rede local. Em outra máquina na mesma rede,
+acesse `http://<IP-DESTA-MAQUINA>:5173/` (use a porta exibida pelo Vite).
+No macOS, consulte o IP do Wi-Fi com `ipconfig getifaddr en0`.
+Mantenha o servidor em execução durante o acesso.
+
+A URL da API em `VITE_SERVER_URL` deve ser acessível pela outra máquina.
+Se usar Reverb, configure `VITE_REVERB_HOST` com o IP do servidor, sem `http://`,
+em vez de `localhost`. O backend deve aceitar conexões pela rede e permitir
+a origem do frontend no CORS.
+
 ## Tecnologias Utilizadas
 
 - React
