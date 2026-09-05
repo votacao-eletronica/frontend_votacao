@@ -23,6 +23,7 @@ export function VotingRoom() {
     const [requestingSpeech, setRequestingSpeech] = useState(false)
     const [speechRequested, setSpeechRequested] = useState(false)
     const navigate = useNavigate()
+    const isSessionLoaded = session !== null
 
     const load = useCallback(async () => setSession(await councilService.getSession(sessionId)), [sessionId])
 
@@ -43,7 +44,7 @@ export function VotingRoom() {
 
     useEffect(() => {
         const { token } = getStoredAuth()
-        if (!token || !session) return
+        if (!token || !isSessionLoaded) return
 
         const echo = getEcho(token)
         const channelName = `voting-session.${sessionId}`
@@ -63,13 +64,12 @@ export function VotingRoom() {
             })
 
         return () => echo.leave(channelName)
-    }, [load, sessionId, Boolean(session)])
+    }, [isSessionLoaded, load, navigate, sessionId])
 
     const currentProposal = session?.propositions[currentIndex]
     const attendees = useMemo(() => {
-        const source = onlineMembers.length > 0 ? onlineMembers : (session?.attendees ?? [])
-        return [...new Map(source.map(member => [member.id, member])).values()]
-    }, [onlineMembers, session?.attendees])
+        return [...new Map(onlineMembers.map(member => [member.id, member])).values()]
+    }, [onlineMembers])
 
     async function vote(choice: VotingChoice) {
         if (!currentProposal) return
