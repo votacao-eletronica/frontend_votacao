@@ -4,9 +4,7 @@ import {
     ArrowLeft,
     CaretLeft,
     CaretRight,
-    CheckCircle,
     Clock,
-    MinusCircle,
     Users,
     XCircle,
 } from 'phosphor-react'
@@ -18,17 +16,13 @@ import { getStoredAuth } from '../utils/AuthDataStore'
 type NominalVote = SessionHistory['propositions'][number]['nominal_votes'][number]
 type VoteChoice = NominalVote['vote']
 
-const columns: Array<{
-    choice: VoteChoice
-    title: string
-    accent: string
-    surface: string
-    icon: typeof CheckCircle
-}> = [
-    { choice: 'yes', title: 'A favor', accent: 'text-green-700', surface: 'border-green-200 bg-green-50', icon: CheckCircle },
-    { choice: 'no', title: 'Contra', accent: 'text-red-700', surface: 'border-red-200 bg-red-50', icon: XCircle },
-    { choice: 'abstention', title: 'Abstenção', accent: 'text-gray-700', surface: 'border-gray-200 bg-gray-50', icon: MinusCircle },
-]
+const voteCardStyles: Record<VoteChoice, string> = {
+    yes: 'border-green-300 bg-green-50 text-green-950 shadow-green-100',
+    no: 'border-red-300 bg-red-50 text-red-950 shadow-red-100',
+    abstention: 'border-gray-300 bg-gray-100 text-gray-900 shadow-gray-100',
+}
+
+const pendingCardStyle = 'border-gray-200 bg-white text-gray-900'
 
 function formatTime(date: Date) {
     return new Intl.DateTimeFormat('pt-BR', {
@@ -90,19 +84,15 @@ export function SessionPresentation() {
     }, [load, sessionId])
 
     const proposition = session?.propositions[currentIndex]
-    const groupedVotes = useMemo(() => {
-        const groups: Record<VoteChoice, NominalVote[]> = {
-            yes: [],
-            no: [],
-            abstention: [],
-        }
-
-        proposition?.nominal_votes.forEach(vote => groups[vote.vote].push(vote))
-        return groups
+    const voteByUserId = useMemo(() => {
+        const votes = new Map<number, NominalVote>()
+        proposition?.nominal_votes.forEach(vote => votes.set(vote.user_id, vote))
+        return votes
     }, [proposition])
 
     const totalVoters = proposition?.nominal_votes.length ?? 0
     const totalAttendees = session?.attendees.length ?? 0
+    const voteTotals = proposition?.votes ?? { yes: 0, no: 0, abstentions: 0, total: 0 }
     const progress = totalAttendees > 0 ? Math.min((totalVoters / totalAttendees) * 100, 100) : 0
 
     if (loading) {
@@ -143,9 +133,9 @@ export function SessionPresentation() {
             </header>
 
             <section className="mx-auto flex max-w-[1800px] flex-col px-6 py-7 lg:px-10 lg:py-9">
-                <div className="mb-7 rounded-lg bg-white px-6 py-5 shadow lg:px-8">
+                <div className="relative mb-7 rounded-lg bg-white px-6 py-5 pb-16 shadow lg:px-8">
                     <div className="flex items-start justify-between gap-6">
-                        <div className="min-w-0">
+                        <div className="min-w-0 pr-0 lg:pr-36">
                             <p className="mb-2 text-sm font-bold uppercase tracking-wider text-blue-600">Proposição {currentIndex + 1} de {session.propositions.length}</p>
                             <h2 className="text-2xl font-extrabold leading-tight lg:text-4xl">{proposition.title}</h2>
                             {proposition.description && <p className="mt-3 max-w-5xl text-base leading-relaxed text-gray-600 lg:text-lg">{proposition.description}</p>}
@@ -158,39 +148,43 @@ export function SessionPresentation() {
                             </div>
                         )}
                     </div>
+
+                    <div className="absolute bottom-4 right-6 flex gap-2 lg:right-8">
+                        <div title="A favor" className="flex h-11 w-11 items-center justify-center rounded-md bg-green-600 text-xl font-black text-white shadow-sm">
+                            {voteTotals.yes}
+                        </div>
+                        <div title="Contra" className="flex h-11 w-11 items-center justify-center rounded-md bg-red-600 text-xl font-black text-white shadow-sm">
+                            {voteTotals.no}
+                        </div>
+                        <div title="Abstenções" className="flex h-11 w-11 items-center justify-center rounded-md bg-gray-700 text-xl font-black text-white shadow-sm">
+                            {voteTotals.abstentions}
+                        </div>
+                        <div title="Vereadores que votaram" className="flex h-11 min-w-14 items-center justify-center rounded-md bg-blue-600 px-2 text-lg font-black text-white shadow-sm">
+                            {totalVoters}/{totalAttendees}
+                        </div>
+                    </div>
                 </div>
 
-                <div className="grid flex-1 gap-5 lg:grid-cols-3">
-                    {columns.map(column => {
-                        const Icon = column.icon
-                        const votes = groupedVotes[column.choice]
+                <div className="grid flex-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
+                    {session.attendees.map(attendee => {
+                        const vote = voteByUserId.get(attendee.id)
+                        const cardStyle = vote ? voteCardStyles[vote.vote] : pendingCardStyle
+                        const party = vote?.user_party ?? attendee.party
 
                         return (
-                            <article key={column.choice} className={`min-h-[410px] rounded-lg border p-5 shadow lg:p-7 ${column.surface}`}>
-                                <div className="mb-6 flex items-center justify-between border-b border-gray-200 pb-5">
-                                    <div className={`flex items-center gap-3 ${column.accent}`}>
-                                        <Icon size={36} weight="fill" />
-                                        <h3 className="text-2xl font-black uppercase tracking-wide">{column.title}</h3>
-                                    </div>
-                                    <span className={`flex h-14 min-w-14 items-center justify-center rounded-md bg-white px-4 text-3xl font-black shadow-sm ${column.accent}`}>{votes.length}</span>
-                                </div>
-
-                                {votes.length === 0 ? (
-                                    <div className="flex min-h-64 items-center justify-center rounded-lg border border-dashed border-gray-300 bg-white/70 text-center text-gray-500">Nenhum voto registrado</div>
+                            <article key={attendee.id} className={`flex min-h-36 items-center gap-4 rounded-lg border p-4 shadow-sm transition-colors duration-500 ${cardStyle}`}>
+                                {attendee.photo ? (
+                                    <img src={attendee.photo} alt={`Foto de ${attendee.name}`} className="h-20 w-20 shrink-0 rounded-md object-cover shadow-sm" />
                                 ) : (
-                                    <div className="grid gap-3 xl:grid-cols-2">
-                                        {votes.map(vote => (
-                                            <div key={vote.user_id} className="flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition duration-500 animate-[pulse_700ms_ease-out_1]">
-                                                {vote.user_photo ? (
-                                                    <img src={vote.user_photo} alt={`Foto de ${vote.user_name}`} className="h-11 w-11 shrink-0 rounded-full object-cover" />
-                                                ) : (
-                                                    <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-gray-100 text-lg font-black ${column.accent}`}>{vote.user_name.charAt(0).toUpperCase()}</span>
-                                                )}
-                                                <span className="text-base font-bold leading-tight lg:text-lg">{vote.user_name}</span>
-                                            </div>
-                                        ))}
-                                    </div>
+                                    <span className="flex h-20 w-20 shrink-0 items-center justify-center rounded-md bg-white/80 text-3xl font-black text-gray-500 shadow-sm">
+                                        {attendee.name.charAt(0).toUpperCase()}
+                                    </span>
                                 )}
+
+                                <div className="min-w-0 flex-1">
+                                    <h3 className="break-words text-xl font-black leading-tight">{attendee.name}</h3>
+                                    <p className="mt-1 text-sm font-semibold uppercase tracking-wide opacity-75">{party?.acronym ?? 'Sem partido'}</p>
+                                </div>
                             </article>
                         )
                     })}
