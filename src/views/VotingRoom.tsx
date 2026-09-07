@@ -8,9 +8,9 @@ import { getStoredAuth } from '../utils/AuthDataStore'
 import { getEcho } from '../services/echoService'
 
 const choices: Array<{ value: VotingChoice; label: string; icon: typeof Check; style: string }> = [
-    { value: 'yes', label: 'A favor', icon: Check, style: 'bg-emerald-600 hover:bg-emerald-700' },
+    { value: 'yes', label: 'A favor', icon: Check, style: 'bg-green-600 hover:bg-green-700' },
     { value: 'no', label: 'Contra', icon: X, style: 'bg-red-600 hover:bg-red-700' },
-    { value: 'abstention', label: 'Abstenção', icon: Minus, style: 'bg-slate-600 hover:bg-slate-700' },
+    { value: 'abstention', label: 'Abstenção', icon: Minus, style: 'bg-gray-600 hover:bg-gray-700' },
 ]
 
 export function VotingRoom() {
@@ -99,18 +99,18 @@ export function VotingRoom() {
         }
     }
 
-    if (!session || !currentProposal) return <div className="min-h-screen bg-slate-950 p-8 text-slate-300">Entrando na sessão...</div>
+    if (!session || !currentProposal) return <div className="min-h-screen bg-gray-50 p-8 text-gray-500">Entrando na sessão...</div>
 
     return (
-        <main className="min-h-screen bg-slate-950 text-white">
-            <header className="border-b border-slate-800 bg-slate-900 px-5 py-4">
+        <main className="min-h-screen bg-gray-50 text-gray-900">
+            <header className="border-b border-gray-200 bg-white px-5 py-4 shadow-sm">
                 <div className="mx-auto flex max-w-7xl items-center justify-between gap-4">
-                    <button onClick={() => navigate('/council')} className="flex items-center gap-2 text-sm font-semibold text-slate-300 hover:text-white"><ArrowLeft /> Sair da sessão</button>
+                    <button onClick={() => navigate('/council')} className="flex items-center gap-2 text-sm font-semibold text-gray-600 hover:text-gray-900"><ArrowLeft /> Sair da sessão</button>
                     <div className="text-center">
-                        <p className="text-xs font-bold uppercase tracking-wider text-emerald-400">Sessão ao vivo</p>
+                        <p className="text-xs font-bold uppercase tracking-wider text-blue-600">Sessão ao vivo</p>
                         <h1 className="font-bold">{session.title}</h1>
                     </div>
-                    <button disabled={requestingSpeech || speechRequested} onClick={requestSpeech} className="flex items-center gap-2 rounded-lg bg-amber-500 px-4 py-2 text-sm font-bold text-slate-950 hover:bg-amber-400 disabled:opacity-60">
+                    <button disabled={requestingSpeech || speechRequested} onClick={requestSpeech} className="flex items-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-sm font-bold text-white hover:bg-blue-700 disabled:opacity-60">
                         <Hand weight="fill" /> {speechRequested ? 'Pedido enviado' : 'Pedir para falar'}
                     </button>
                 </div>
@@ -118,19 +118,19 @@ export function VotingRoom() {
 
             <div className="mx-auto grid max-w-7xl gap-6 px-5 py-8 lg:grid-cols-[1fr_280px]">
                 <section>
-                    <div className="mb-4 flex items-center justify-between text-sm text-slate-400">
+                    <div className="mb-4 flex items-center justify-between text-sm text-gray-500">
                         <span>Proposta {currentIndex + 1} de {session.propositions.length}</span>
                         <span>{Math.round(((currentIndex + 1) / session.propositions.length) * 100)}%</span>
                     </div>
-                    <div className="mb-6 h-2 overflow-hidden rounded-full bg-slate-800"><div className="h-full bg-blue-500 transition-all" style={{ width: `${((currentIndex + 1) / session.propositions.length) * 100}%` }} /></div>
+                    <div className="mb-6 h-2 overflow-hidden rounded-full bg-gray-200"><div className="h-full bg-blue-600 transition-all" style={{ width: `${((currentIndex + 1) / session.propositions.length) * 100}%` }} /></div>
 
-                    <article className="rounded-3xl border border-slate-700 bg-slate-900 p-7 shadow-2xl sm:p-10">
-                        <p className="text-sm font-bold uppercase tracking-wider text-blue-400">Em votação</p>
+                    <article className="rounded-lg bg-white p-7 shadow sm:p-10">
+                        <p className="text-sm font-bold uppercase tracking-wider text-blue-600">Em votação</p>
                         <h2 className="mt-4 text-3xl font-bold leading-tight sm:text-4xl">{currentProposal.title}</h2>
-                        <p className="mt-5 text-lg leading-relaxed text-slate-300">{currentProposal.description}</p>
+                        <p className="mt-5 text-lg leading-relaxed text-gray-600">{currentProposal.description}</p>
 
                         {currentProposal.user_vote ? (
-                            <div className="mt-8 rounded-xl border border-blue-500/30 bg-blue-500/10 p-5 text-center text-lg font-bold text-blue-300">
+                            <div className="mt-8 rounded-md border border-blue-200 bg-blue-50 p-5 text-center text-lg font-bold text-blue-700">
                                 Voto registrado: {choices.find(item => item.value === currentProposal.user_vote)?.label}
                             </div>
                         ) : (
@@ -144,18 +144,18 @@ export function VotingRoom() {
                     </article>
 
                     <div className="mt-6 flex justify-between">
-                        <button disabled={currentIndex === 0} onClick={() => setCurrentIndex(index => index - 1)} className="flex items-center gap-2 rounded-lg border border-slate-700 px-4 py-2 font-semibold text-slate-300 disabled:opacity-30"><CaretLeft /> Anterior</button>
-                        <button disabled={currentIndex === session.propositions.length - 1} onClick={() => setCurrentIndex(index => index + 1)} className="flex items-center gap-2 rounded-lg border border-slate-700 px-4 py-2 font-semibold text-slate-300 disabled:opacity-30">Próxima <CaretRight /></button>
+                        <button disabled={currentIndex === 0} onClick={() => setCurrentIndex(index => index - 1)} className="flex items-center gap-2 rounded-md border border-gray-300 bg-white px-4 py-2 font-semibold text-gray-600 hover:bg-gray-50 disabled:opacity-30"><CaretLeft /> Anterior</button>
+                        <button disabled={currentIndex === session.propositions.length - 1} onClick={() => setCurrentIndex(index => index + 1)} className="flex items-center gap-2 rounded-md border border-gray-300 bg-white px-4 py-2 font-semibold text-gray-600 hover:bg-gray-50 disabled:opacity-30">Próxima <CaretRight /></button>
                     </div>
                 </section>
 
-                <aside className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
-                    <div className="mb-5 flex items-center gap-2"><Users className="text-emerald-400" /><h2 className="font-bold">Vereadores na sessão</h2></div>
-                    <p className="mb-4 text-sm text-slate-400">{attendees.length} conectado(s)</p>
+                <aside className="rounded-lg bg-white p-5 shadow">
+                    <div className="mb-5 flex items-center gap-2"><Users className="text-blue-600" /><h2 className="font-bold">Vereadores na sessão</h2></div>
+                    <p className="mb-4 text-sm text-gray-500">{attendees.length} conectado(s)</p>
                     <div className="space-y-3">
                         {attendees.map(member => (
-                            <div key={member.id} className="flex items-center gap-3 rounded-lg bg-slate-800 p-3">
-                                <span className="h-2.5 w-2.5 rounded-full bg-emerald-400" />
+                            <div key={member.id} className="flex items-center gap-3 rounded-md bg-gray-100 p-3 text-gray-700">
+                                <span className="h-2.5 w-2.5 rounded-full bg-green-500" />
                                 <span className="font-medium">{member.name}</span>
                             </div>
                         ))}

@@ -21,17 +21,17 @@ export function CouncilHistory() {
         }).finally(() => setLoading(false))
     }, [page])
 
-    return <main className="min-h-full bg-slate-50 p-8"><div className="mx-auto max-w-6xl">
+    return <main className="min-h-full bg-gray-50 p-8"><div className="mx-auto max-w-6xl">
         <p className="text-sm font-bold uppercase tracking-wider text-blue-600">Plenário digital</p>
-        <h1 className="mt-2 text-3xl font-bold text-slate-900">Histórico de sessões</h1>
-        <p className="mt-2 text-slate-600">Consulte resultados, presenças e votação nominal das sessões encerradas.</p>
-        <div className="mt-8 grid gap-5 md:grid-cols-2 xl:grid-cols-3">{sessions.map(session => <article key={session.id} className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-            <span className="inline-flex rounded-full bg-slate-100 px-3 py-1 text-xs font-bold uppercase text-slate-600">Finalizada</span>
-            <h2 className="mt-4 text-xl font-bold text-slate-900">{session.title}</h2>
-            <div className="mt-5 space-y-2 text-sm text-slate-600"><p className="flex items-center gap-2"><CalendarCheck /> {session.closed_at ? new Date(session.closed_at).toLocaleString('pt-BR') : '-'}</p><p className="flex items-center gap-2"><ChartBar /> {session.propositions_count} proposta(s)</p><p className="flex items-center gap-2"><Users /> {session.attendances_count} participante(s)</p></div>
-            <button onClick={() => navigate(`/sessions/${session.id}/history`)} className="mt-6 w-full rounded-lg bg-slate-900 px-4 py-3 font-bold text-white hover:bg-slate-800">Ver resultado completo</button>
+        <h1 className="mt-2 text-3xl font-bold text-gray-900">Histórico de sessões</h1>
+        <p className="mt-2 text-gray-600">Consulte resultados, presenças e votação nominal das sessões encerradas.</p>
+        <div className="mt-8 grid gap-5 md:grid-cols-2 xl:grid-cols-3">{sessions.map(session => <article key={session.id} className="rounded-lg border border-gray-200 bg-white p-6 shadow">
+            <span className="inline-flex rounded-full bg-gray-100 px-3 py-1 text-xs font-bold uppercase text-gray-600">Finalizada</span>
+            <h2 className="mt-4 text-xl font-bold text-gray-900">{session.title}</h2>
+            <div className="mt-5 space-y-2 text-sm text-gray-600"><p className="flex items-center gap-2"><CalendarCheck /> {session.closed_at ? new Date(session.closed_at).toLocaleString('pt-BR') : '-'}</p><p className="flex items-center gap-2"><ChartBar /> {session.propositions_count} proposta(s)</p><p className="flex items-center gap-2"><Users /> {session.attendances_count} participante(s)</p></div>
+            <button onClick={() => navigate(`/sessions/${session.id}/history`)} className="mt-6 w-full rounded-md bg-blue-600 px-4 py-3 font-bold text-white hover:bg-blue-700">Ver resultado completo</button>
         </article>)}</div>
-        {!loading && sessions.length === 0 && <div className="mt-8 rounded-2xl border border-dashed p-12 text-center text-slate-500">Nenhuma sessão encerrada.</div>}
-        <div className="mt-6 rounded-xl bg-white"><Pagination meta={pagination} loading={loading} onPageChange={setPage} /></div>
+        {!loading && sessions.length === 0 && <div className="mt-8 rounded-lg border border-dashed p-12 text-center text-gray-500">Nenhuma sessão encerrada.</div>}
+        <div className="mt-6 rounded-lg bg-white"><Pagination meta={pagination} loading={loading} onPageChange={setPage} /></div>
     </div></main>
 }

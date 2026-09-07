@@ -37,35 +37,35 @@ export function CouncilDashboard() {
     }, [loadSessions])
 
     return (
-        <main className="min-h-full bg-slate-50 px-4 py-8 sm:px-8">
+        <main className="min-h-full bg-gray-50 px-4 py-8 sm:px-8">
             <div className="mx-auto max-w-6xl">
                 <div className="mb-8">
                     <p className="mb-2 text-sm font-semibold uppercase tracking-wider text-blue-600">Plenário digital</p>
-                    <h1 className="text-3xl font-bold text-slate-900">Sessões abertas</h1>
-                    <p className="mt-2 text-slate-600">Entre em uma sessão para registrar presença e votar nas propostas.</p>
+                    <h1 className="text-3xl font-bold text-gray-900">Sessões abertas</h1>
+                    <p className="mt-2 text-gray-600">Entre em uma sessão para registrar presença e votar nas propostas.</p>
                 </div>
 
                 {loading ? (
-                    <p className="text-slate-500">Carregando sessões...</p>
+                    <p className="text-gray-500">Carregando sessões...</p>
                 ) : sessions.length === 0 ? (
-                    <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-12 text-center">
-                        <Clock className="mx-auto mb-4 h-12 w-12 text-slate-400" />
-                        <h2 className="text-lg font-semibold text-slate-800">Nenhuma sessão aberta</h2>
-                        <p className="mt-1 text-slate-500">Esta tela será atualizada automaticamente quando uma sessão começar.</p>
+                    <div className="rounded-lg border border-dashed border-gray-300 bg-white p-12 text-center">
+                        <Clock className="mx-auto mb-4 h-12 w-12 text-gray-400" />
+                        <h2 className="text-lg font-semibold text-gray-800">Nenhuma sessão aberta</h2>
+                        <p className="mt-1 text-gray-500">Esta tela será atualizada automaticamente quando uma sessão começar.</p>
                     </div>
                 ) : (
                     <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
                         {sessions.map(session => (
-                            <article key={session.id} className="overflow-hidden rounded-2xl border border-emerald-200 bg-white shadow-sm">
-                                <div className="h-1.5 bg-emerald-500" />
+                            <article key={session.id} className="overflow-hidden rounded-lg border border-green-200 bg-white shadow">
+                                <div className="h-1.5 bg-green-500" />
                                 <div className="p-6">
-                                    <span className="inline-flex rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold uppercase text-emerald-700">Ao vivo</span>
-                                    <h2 className="mt-4 text-xl font-bold text-slate-900">{session.title}</h2>
-                                    <div className="mt-5 flex items-center gap-2 text-sm text-slate-600">
+                                    <span className="inline-flex rounded-full bg-green-100 px-3 py-1 text-xs font-semibold uppercase text-green-700">Ao vivo</span>
+                                    <h2 className="mt-4 text-xl font-bold text-gray-900">{session.title}</h2>
+                                    <div className="mt-5 flex items-center gap-2 text-sm text-gray-600">
                                         <ListChecks className="h-5 w-5" />
                                         {session.propositions_count} proposta(s)
                                     </div>
-                                    <button onClick={() => navigate(`/council/sessions/${session.id}`)} className="mt-6 flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-3 font-semibold text-white hover:bg-blue-700">
+                                    <button onClick={() => navigate(`/council/sessions/${session.id}`)} className="mt-6 flex w-full items-center justify-center gap-2 rounded-md bg-blue-600 px-4 py-3 font-semibold text-white hover:bg-blue-700">
                                         <SignIn className="h-5 w-5" /> Entrar na sessão
                                     </button>
                                 </div>
