@@ -16,6 +16,7 @@ export function getEcho(token: string): Echo<'reverb'> {
 
     const scheme = import.meta.env.VITE_REVERB_SCHEME ?? 'http'
     const port = Number(import.meta.env.VITE_REVERB_PORT ?? (scheme === 'https' ? 443 : 80))
+    const useTLS = scheme === 'https'
 
     echo = new Echo<'reverb'>({
         broadcaster: 'reverb',
@@ -24,8 +25,8 @@ export function getEcho(token: string): Echo<'reverb'> {
         wsHost: import.meta.env.VITE_REVERB_HOST ?? window.location.hostname,
         wsPort: port,
         wssPort: port,
-        forceTLS: scheme === 'https',
-        enabledTransports: ['ws', 'wss'],
+        forceTLS: useTLS,
+        enabledTransports: useTLS ? ['wss'] : ['ws'],
         authEndpoint: `${apiOrigin()}/broadcasting/auth`,
         auth: {
             headers: {
