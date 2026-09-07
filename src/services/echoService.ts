@@ -5,7 +5,13 @@ let echo: Echo<'reverb'> | null = null
 let currentToken: string | null = null
 
 function apiOrigin(): string {
-    return new URL(import.meta.env.VITE_SERVER_URL).origin
+    const serverUrl = import.meta.env.VITE_SERVER_URL
+
+    return serverUrl.startsWith('http') ? new URL(serverUrl).origin : ''
+}
+
+function envValue(value: string | undefined): string | undefined {
+    return value?.trim() || undefined
 }
 
 export function getEcho(token: string): Echo<'reverb'> {
@@ -15,14 +21,15 @@ export function getEcho(token: string): Echo<'reverb'> {
     currentToken = token
 
     const scheme = import.meta.env.VITE_REVERB_SCHEME ?? 'http'
-    const port = Number(import.meta.env.VITE_REVERB_PORT ?? (scheme === 'https' ? 443 : 80))
+    const configuredPort = envValue(import.meta.env.VITE_REVERB_PORT)
+    const port = Number(configuredPort ?? window.location.port ?? (scheme === 'https' ? 443 : 80))
     const useTLS = scheme === 'https'
 
     echo = new Echo<'reverb'>({
         broadcaster: 'reverb',
         Pusher,
         key: import.meta.env.VITE_REVERB_APP_KEY,
-        wsHost: import.meta.env.VITE_REVERB_HOST ?? window.location.hostname,
+        wsHost: envValue(import.meta.env.VITE_REVERB_HOST) ?? window.location.hostname,
         wsPort: port,
         wssPort: port,
         forceTLS: useTLS,

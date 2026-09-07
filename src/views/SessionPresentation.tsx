@@ -15,6 +15,13 @@ import { getStoredAuth } from '../utils/AuthDataStore'
 
 type NominalVote = SessionHistory['propositions'][number]['nominal_votes'][number]
 type VoteChoice = NominalVote['vote']
+type VoteCastPayload = {
+    proposition_id?: unknown
+    propositionId?: unknown
+    proposition?: {
+        id?: unknown
+    }
+}
 
 const voteCardStyles: Record<VoteChoice, string> = {
     yes: 'border-green-300 bg-green-50 text-green-950 shadow-green-100',
@@ -32,6 +39,19 @@ function formatTime(date: Date) {
     }).format(date)
 }
 
+function parseNumericId(value: unknown): number | null {
+    const id = typeof value === 'number' ? value : Number(value)
+    return Number.isInteger(id) && id > 0 ? id : null
+}
+
+function getVotedPropositionId(event: VoteCastPayload): number | null {
+    return (
+        parseNumericId(event.proposition_id) ??
+        parseNumericId(event.propositionId) ??
+        parseNumericId(event.proposition?.id)
+    )
+}
+
 export function SessionPresentation() {
     const { id } = useParams<{ id: string }>()
     const sessionId = Number(id)
@@ -43,12 +63,20 @@ export function SessionPresentation() {
     const [error, setError] = useState<string | null>(null)
     const [lastUpdate, setLastUpdate] = useState<Date | null>(null)
 
-    const load = useCallback(async () => {
+    const load = useCallback(async (focusedPropositionId?: number | null) => {
         if (!Number.isFinite(sessionId)) return
 
         try {
             const data = await sessionService.getHistory(sessionId)
             setSession(data)
+            setCurrentIndex(current => {
+                if (focusedPropositionId) {
+                    const focusedIndex = data.propositions.findIndex(proposition => proposition.id === focusedPropositionId)
+                    if (focusedIndex >= 0) return focusedIndex
+                }
+
+                return Math.min(current, Math.max(data.propositions.length - 1, 0))
+            })
             setLastUpdate(new Date())
             setError(null)
         } catch (loadError) {
@@ -76,7 +104,9 @@ export function SessionPresentation() {
         const channel = echo.join(channelName)
 
         channel
-            .listen('.vote.cast', load)
+            .listen('.vote.cast', (event: VoteCastPayload) => {
+                load(getVotedPropositionId(event ?? {}))
+            })
             .listen('.attendance.created', load)
             .listen('.session.closed', load)
 
