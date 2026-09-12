@@ -1,4 +1,4 @@
-﻿import { createContext, useCallback, useContext, useEffect, useMemo, useState, type PropsWithChildren } from 'react'
+import { createContext, useCallback, useContext, useMemo, useState, type PropsWithChildren } from 'react'
 import axios from 'axios'
 import { toast } from 'react-toastify'
 import { ToastError } from '../../components/alert/toastError'
@@ -23,14 +23,9 @@ type AuthContextData = {
 export const AuthContext = createContext<AuthContextData | undefined>(undefined)
 
 export function AuthProvider({ children }: PropsWithChildren) {
-    const [token, setToken] = useState<string | null>(() => getStoredAuth().token)
-    const [user, setUser] = useState<User | null>(() => getStoredAuth().user)
-
-    useEffect(() => {
-        const stored = getStoredAuth()
-        setToken(stored.token)
-        setUser(stored.user)
-    }, [])
+    const [storedAuth] = useState<AuthData>(() => getStoredAuth())
+    const [token, setToken] = useState<string | null>(storedAuth.token)
+    const [user, setUser] = useState<User | null>(storedAuth.user)
 
     const login = useCallback(async ({ email, password }: Credentials) => {
         try {

@@ -41,7 +41,7 @@ export function useSession(sessionId: number | undefined) {
 
         const echo = getEcho(token)
         const channelName = `voting-session.${sessionId}`
-        const channel = echo.private(channelName)
+        const channel = echo.join(channelName)
 
         channel.listen('.attendance.created', () => {
             fetchSession()

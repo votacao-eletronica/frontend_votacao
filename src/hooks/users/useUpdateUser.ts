@@ -13,10 +13,12 @@ export function useUpdateUser() {
             await userService.updateUser(id, data)
             setError(null)
             toast.success('Usuário atualizado com sucesso!')
+            return true
         } catch (err) {
             const errorMessage = err instanceof Error ? err.message : 'Erro ao atualizar usuário'
             setError(errorMessage)
             toast.error(errorMessage)
+            return false
         } finally {
             setLoading(false)
         }

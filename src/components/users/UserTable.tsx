@@ -32,8 +32,10 @@ export function UserTable({ users, loading, onEdit }: UserTableProps) {
                 <thead className="bg-gray-100 border-b border-gray-300">
                     <tr>
                         <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Nome</th>
+                        <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Foto</th>
                         <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Email</th>
                         <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Funções</th>
+                        <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Partido atual</th>
                         <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Ações</th>
                     </tr>
                 </thead>
@@ -41,6 +43,15 @@ export function UserTable({ users, loading, onEdit }: UserTableProps) {
                     {users.map((user) => (
                         <tr key={user.id} className="border-b border-gray-300 hover:bg-gray-50">
                             <td className="px-6 py-3 text-sm text-gray-900">{user.name}</td>
+                            <td className="px-6 py-3 text-sm text-gray-900">
+                                {user.photo ? (
+                                    <img src={user.photo} alt={`Foto de ${user.name}`} className="h-11 w-11 rounded-full object-cover" />
+                                ) : (
+                                    <div className="flex h-11 w-11 items-center justify-center rounded-full bg-gray-200 font-semibold text-gray-600">
+                                        {user.name.charAt(0).toUpperCase()}
+                                    </div>
+                                )}
+                            </td>
                             <td className="px-6 py-3 text-sm text-gray-600">{user.email}</td>
                             <td className="px-6 py-3 text-sm">
                                 <div className="flex flex-wrap gap-2">
@@ -53,6 +64,11 @@ export function UserTable({ users, loading, onEdit }: UserTableProps) {
                                         </span>
                                     ))}
                                 </div>
+                            </td>
+                            <td className="px-6 py-3 text-sm text-gray-700">
+                                {user.current_party ? (
+                                    <span className="font-semibold">{user.current_party.acronym}</span>
+                                ) : 'Sem filiação'}
                             </td>
                             <td className="px-6 py-3 text-sm">
                                 <div className="flex gap-2">
