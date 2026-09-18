@@ -3,6 +3,7 @@ import { useProposals } from '../hooks/proposals/useProposals'
 import { ProposalTable } from '../components/proposals/ProposalTable'
 import { CreateProposalModal } from '../components/proposals/CreateProposalModal'
 import { UpdateProposalModal } from '../components/proposals/UpdateProposalModal'
+import { ViewProposalModal } from '../components/proposals/ViewProposalModal'
 import { Button } from '../components/form/button'
 import type { Proposal } from '../types/Proposal'
 import { Pagination } from '../components/ui/Pagination'
@@ -12,10 +13,21 @@ export function Proposals() {
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
     const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false)
     const [selectedProposal, setSelectedProposal] = useState<Proposal | null>(null)
+    const [isViewModalOpen, setIsViewModalOpen] = useState(false)
 
     const handleEditProposal = (proposal: Proposal) => {
+        if (proposal.status.toLowerCase() === 'finalizado') {
+            setSelectedProposal(proposal)
+            setIsViewModalOpen(true)
+            return
+        }
         setSelectedProposal(proposal)
         setIsUpdateModalOpen(true)
+    }
+
+    const handleViewProposal = (proposal: Proposal) => {
+        setSelectedProposal(proposal)
+        setIsViewModalOpen(true)
     }
 
     const handleCloseUpdateModal = () => {
@@ -47,6 +59,7 @@ export function Proposals() {
                         proposals={proposals} 
                         loading={loading}
                         onEdit={handleEditProposal}
+                        onView={handleViewProposal}
                     />
                     <Pagination meta={pagination} loading={loading} onPageChange={setPage} />
                 </div>
@@ -62,6 +75,15 @@ export function Proposals() {
                 isOpen={isUpdateModalOpen}
                 onClose={handleCloseUpdateModal}
                 onSuccess={refetch}
+                proposal={selectedProposal}
+            />
+
+            <ViewProposalModal
+                isOpen={isViewModalOpen}
+                onClose={() => {
+                    setIsViewModalOpen(false)
+                    setSelectedProposal(null)
+                }}
                 proposal={selectedProposal}
             />
         </div>

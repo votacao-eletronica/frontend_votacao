@@ -1,10 +1,11 @@
 import { NavLink, Outlet, useLocation } from 'react-router'
-import { Users, Flag, Lightbulb, Clock, SignOut, House, ClockCounterClockwise } from 'phosphor-react'
+import { Users, Flag, Lightbulb, Clock, SignOut, House, ClockCounterClockwise, Buildings } from 'phosphor-react'
 import { useAuth } from '../../hooks/auth/context'
 
 export function Layout() {
     const { logout, user } = useAuth()
     const isCouncilMember = user?.roles.some(role => role.name === 'vereador') ?? false
+    const isAdmin = user?.roles.some(role => role.name === 'admin') ?? false
     const location = useLocation()
     const isVotingRoom = location.pathname.startsWith('/council/sessions/')
 
@@ -36,6 +37,7 @@ export function Layout() {
                             </>
                             )}
                             {!isCouncilMember && (<>
+                            {isAdmin && <li><NavLink to="/chamber" className={({ isActive }) => `flex items-center px-4 py-2 text-sm font-medium rounded-md transition-colors ${isActive ? 'bg-blue-100 text-blue-700' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'}`}><Buildings className="mr-3 h-5 w-5" />Dados da Câmara</NavLink></li>}
                             <li>
                                 <NavLink
                                     to="/users"

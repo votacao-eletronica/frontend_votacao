@@ -37,4 +37,15 @@ export const sessionService = {
         const response = await createApiInstance().get<{data: SessionHistory}>(`/sessions/${sessionId}/history`)
         return response.data.data
     },
+    async downloadMinutes(sessionId: number): Promise<void> {
+        const response = await createApiInstance().get<Blob>(`/sessions/${sessionId}/minutes.pdf`, { responseType: 'blob' })
+        const url = URL.createObjectURL(response.data)
+        const link = document.createElement('a')
+        link.href = url
+        link.download = `ata-sessao-${sessionId}.pdf`
+        document.body.appendChild(link)
+        link.click()
+        link.remove()
+        URL.revokeObjectURL(url)
+    },
 }

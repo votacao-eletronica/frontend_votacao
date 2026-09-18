@@ -14,6 +14,7 @@ import { Home } from "../views/Home";
 import { SessionHistory } from "../views/SessionHistory";
 import { CouncilHistory } from "../views/CouncilHistory";
 import { SessionPresentation } from "../views/SessionPresentation";
+import { ChamberSettings } from "../views/ChamberSettings";
 
 
 export const router = createBrowserRouter([
@@ -68,6 +69,10 @@ export const router = createBrowserRouter([
             {
                 path: "sessions",
                 Component: Sessions,
+            },
+            {
+                path: "chamber",
+                Component: ChamberSettings,
             },
             {
                 path: "sessions/:id",

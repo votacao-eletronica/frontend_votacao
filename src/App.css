@@ -1,5 +1,19 @@
 @import "tailwindcss";
 
+:root {
+  color-scheme: light;
+  background-color: #f9fafb;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+  margin: 0;
+  background-color: #f9fafb;
+  color: #111827;
+}
+
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,

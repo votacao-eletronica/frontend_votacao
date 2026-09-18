@@ -1,14 +1,15 @@
 import type { Proposal } from '../../types/Proposal'
 import { IconButton } from '../form/IconButton'
-import { PencilSimple } from 'phosphor-react'
+import { Eye, PencilSimple } from 'phosphor-react'
 
 type ProposalTableProps = {
     proposals: Proposal[]
     loading?: boolean
     onEdit?: (proposal: Proposal) => void
+    onView?: (proposal: Proposal) => void
 }
 
-export function ProposalTable({ proposals, loading, onEdit }: ProposalTableProps) {
+export function ProposalTable({ proposals, loading, onEdit, onView }: ProposalTableProps) {
     if (loading) {
         return (
             <div className="flex justify-center items-center py-8">
@@ -37,7 +38,9 @@ export function ProposalTable({ proposals, loading, onEdit }: ProposalTableProps
                     </tr>
                 </thead>
                 <tbody>
-                    {proposals.map((proposal) => (
+                    {proposals.map((proposal) => {
+                        const isFinalized = proposal.status.toLowerCase() === 'finalizado'
+                        return (
                         <tr key={proposal.id} className="border-b border-gray-300 hover:bg-gray-50">
                             <td className="px-6 py-3 text-sm text-gray-900 font-medium">{proposal.title}</td>
                             <td className="px-6 py-3 text-sm text-gray-600">{proposal.description}</td>
@@ -47,7 +50,17 @@ export function ProposalTable({ proposals, loading, onEdit }: ProposalTableProps
                                 </span>
                             </td>
                             <td className="px-6 py-3 text-sm text-gray-600">
-                                {onEdit && (
+                                {isFinalized && onView ? (
+                                    <IconButton
+                                        icon={<Eye size={20} />}
+                                        variant="secondary"
+                                        title="Visualizar proposta finalizada"
+                                        onClick={(e: any) => {
+                                            e.stopPropagation()
+                                            onView(proposal)
+                                        }}
+                                    />
+                                ) : onEdit && (
                                     <IconButton
                                         icon={<PencilSimple size={20} />}
                                         variant="primary"
@@ -60,7 +73,8 @@ export function ProposalTable({ proposals, loading, onEdit }: ProposalTableProps
                                 )}
                             </td>
                         </tr>
-                    ))}
+                        )
+                    })}
                 </tbody>
             </table>
         </div>
