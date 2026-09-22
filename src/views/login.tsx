@@ -24,7 +24,6 @@ const Login = () => {
     const onSubmit = async (data: LoginForm) => {
         setIsLoading(true);
         try {
-            console.log('Login data:', data);
             await login(data);
         } finally {
             setIsLoading(false);

@@ -13,9 +13,9 @@ export function createApiInstance() {
         headers["Authorization"] = `Bearer ${authData.token}`
     }
 
-    const baseURL = import.meta.env.VITE_SERVER_URL
+    const baseURL = import.meta.env.VITE_SERVER_URL?.trim().replace(/\/+$/, '')
 
-    if(!baseURL) throw new Error("URL do servidor não informada!")
+    if(!baseURL) throw new Error("URL da API não configurada. Defina VITE_SERVER_URL e gere um novo deploy.")
 
     const api = axios.create({
         baseURL,

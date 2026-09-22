@@ -6,6 +6,7 @@ import { getStoredAuth, removeStoredAuthData, setStoreAuthData } from '../../uti
 import type { User } from '../../types/User'
 import type { AuthData } from '../../types/AuthData'
 import { disconnectEcho } from '../../services/echoService'
+import { createApiInstance } from '../../services/httpService'
 
 type Credentials = {
     email: string
@@ -29,7 +30,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
 
     const login = useCallback(async ({ email, password }: Credentials) => {
         try {
-            const response = await axios.post(`${import.meta.env.VITE_SERVER_URL}/login`, {
+            const response = await createApiInstance().post('/login', {
                 email,
                 password
             })
@@ -45,11 +46,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
                 ? error.response?.data?.message || error.message
                 : (error as Error).message
 
-            toast.error(ToastError, {
-                data: {
-                    title: 'Ocorreu um erro!',
-                    content: message,
-                },
+            toast.error(<ToastError title="Ocorreu um erro!" content={message} />, {
                 ariaLabel: message,
                 autoClose: 5000,
                 icon: false,
