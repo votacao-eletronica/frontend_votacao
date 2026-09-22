@@ -1,3 +1,4 @@
+import { CaretDown } from "phosphor-react"
 import type { UseFormRegisterReturn } from "react-hook-form"
 
 type Option = {
@@ -29,7 +30,7 @@ export function Select(props: SelectProps) {
                 <select
                     {...props.formRegister}
                     id={props.name}
-                    className="mt-1 block w-full px-3 py-2 pr-20 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                    className="mt-1 block w-full appearance-none bg-white px-3 py-2 pr-10 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                 >
                     {props.options.map(option => (
                         <option key={option.value} value={option.value}>
@@ -37,6 +38,11 @@ export function Select(props: SelectProps) {
                         </option>
                     ))}
                 </select>
+                <CaretDown
+                    aria-hidden="true"
+                    size={16}
+                    className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+                />
             </div>
 
             {props.caption && (
