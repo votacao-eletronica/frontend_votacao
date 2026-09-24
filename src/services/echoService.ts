@@ -33,7 +33,8 @@ export function getEcho(token: string): Echo<'reverb'> {
         wsPort: port,
         wssPort: port,
         forceTLS: useTLS,
-        enabledTransports: useTLS ? ['wss'] : ['ws'],
+        // Pusher names the WebSocket transport 'ws'; forceTLS enables WSS.
+        enabledTransports: ['ws'],
         authEndpoint: `${apiOrigin()}/broadcasting/auth`,
         auth: {
             headers: {
