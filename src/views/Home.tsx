@@ -1,11 +1,7 @@
+import { Navigate } from 'react-router'
 import { useAuth } from '../hooks/auth/context'
-import { CouncilDashboard } from './CouncilDashboard'
-import { Users } from './users'
-
+import { homePath } from '../utils/access'
 export function Home() {
     const { user } = useAuth()
-
-    return user?.roles.some(role => role.name === 'vereador')
-        ? <CouncilDashboard />
-        : <Users />
+    return <Navigate to={homePath(user)} replace />
 }

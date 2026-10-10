@@ -14,7 +14,7 @@ export const councilService = {
     },
 
     async getSession(sessionId: number): Promise<CouncilSession> {
-        const response = await createApiInstance().get<{ data: CouncilSession }>(`/council/sessions/${sessionId}`)
+        const response = await createApiInstance().get<{ data: CouncilSession }>(`/council/sessions/${sessionId}`, { timeout: 20000 })
         return response.data.data
     },
 
@@ -24,7 +24,7 @@ export const councilService = {
     },
 
     async enterSession(sessionId: number): Promise<void> {
-        await createApiInstance().post(`/council/sessions/${sessionId}/enter`)
+        await createApiInstance().post(`/council/sessions/${sessionId}/enter`, {}, { timeout: 20000 })
     },
 
     async castVote(propositionId: number, vote: VotingChoice): Promise<void> {

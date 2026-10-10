@@ -23,9 +23,9 @@ export function PoliticalPartyTable({ parties, loading }: PoliticalPartyTablePro
     }
 
     return (
-        <div className="overflow-x-auto">
-            <table className="min-w-full bg-white border border-gray-300 rounded-lg shadow-sm">
-                <thead className="bg-gray-100 border-b border-gray-300">
+        <div className="table-scroll">
+            <table className="data-table">
+                <thead className="">
                     <tr>
                         <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Logo</th>
                         <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Nome</th>

@@ -1,3 +1,4 @@
+import { Plus } from 'phosphor-react'
 import { useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -57,12 +58,13 @@ export function CreateUserModal({ isOpen, onClose, onSuccess }: CreateUserModalP
     }
 
     return (
-        <Modal isOpen={isOpen} onClose={onClose} title="Criar Usuário">
+        <Modal isOpen={isOpen} onClose={onClose} title="Criar Usuário" description="Cadastre um usuário e defina sua função na Câmara.">
             <form onSubmit={handleSubmit(onSubmit)}>
                 <div className="mb-4">
                     <Input
                         name="name"
                         label="Nome"
+                        placeholder="Informe o nome completo"
                         formRegister={register('name')}
                         caption={errors.name?.message}
                     />
@@ -71,6 +73,7 @@ export function CreateUserModal({ isOpen, onClose, onSuccess }: CreateUserModalP
                     <Input
                         name="email"
                         label="Email"
+                        placeholder="nome@exemplo.com"
                         type="email"
                         formRegister={register('email')}
                         caption={errors.email?.message}
@@ -123,7 +126,7 @@ export function CreateUserModal({ isOpen, onClose, onSuccess }: CreateUserModalP
                         </div>
                     </>
                 )}
-                <div className="flex justify-end space-x-2">
+                <div className="form-actions">
                     <Button
                         text="Cancelar"
                         variant="secondary"
@@ -132,6 +135,7 @@ export function CreateUserModal({ isOpen, onClose, onSuccess }: CreateUserModalP
                     />
                     <Button
                         text="Criar"
+                        icon={<Plus size={17} weight="bold" />}
                         isLoading={loading}
                         disabled={loading}
                         type="submit"

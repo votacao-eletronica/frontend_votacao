@@ -1,3 +1,4 @@
+import { Plus } from 'phosphor-react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -45,12 +46,13 @@ export function CreatePartyModal({ isOpen, onClose, onSuccess }: CreatePartyModa
     }
 
     return (
-        <Modal isOpen={isOpen} onClose={onClose} title="Criar Partido Político">
+        <Modal isOpen={isOpen} onClose={onClose} title="Criar Partido Político" description="Informe os dados de identificação do partido político.">
             <form onSubmit={handleSubmit(onSubmit)}>
                 <div className="mb-4">
                     <Input
                         name="name"
                         label="Nome"
+                        placeholder="Informe o nome completo"
                         formRegister={register('name')}
                         caption={errors.name?.message}
                     />
@@ -59,6 +61,7 @@ export function CreatePartyModal({ isOpen, onClose, onSuccess }: CreatePartyModa
                     <Input
                         name="acronym"
                         label="Sigla"
+                        placeholder="Ex.: PT, MDB, PSD"
                         formRegister={register('acronym')}
                         caption={errors.acronym?.message}
                     />
@@ -67,11 +70,12 @@ export function CreatePartyModal({ isOpen, onClose, onSuccess }: CreatePartyModa
                     <Input
                         name="logo"
                         label="URL do Logo"
+                        placeholder="https://exemplo.com/logo.png"
                         formRegister={register('logo')}
                         caption={errors.logo?.message}
                     />
                 </div>
-                <div className="flex justify-end space-x-2">
+                <div className="form-actions">
                     <Button
                         text="Cancelar"
                         variant="secondary"
@@ -80,6 +84,7 @@ export function CreatePartyModal({ isOpen, onClose, onSuccess }: CreatePartyModa
                     />
                     <Button
                         text="Criar"
+                        icon={<Plus size={17} weight="bold" />}
                         isLoading={loading}
                         disabled={loading}
                         type="submit"

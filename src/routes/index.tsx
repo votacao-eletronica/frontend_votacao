@@ -50,6 +50,7 @@ export const router = createBrowserRouter([
             </PrivateRoute>
         ),
         children: [
+            { path: "access-denied", Component: () => <div className="p-8"><h1 className="text-xl font-semibold">Acesso não configurado</h1><p className="mt-2 text-slate-500">Peça à administração para atribuir uma função à sua conta.</p></div> },
             {
                 index: true,
                 Component: Home,

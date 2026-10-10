@@ -27,12 +27,12 @@ export function UserTable({ users, loading, onEdit }: UserTableProps) {
     }
 
     return (
-        <div className="overflow-x-auto">
-            <table className="min-w-full bg-white border border-gray-300 rounded-lg shadow-sm">
-                <thead className="bg-gray-100 border-b border-gray-300">
+        <div className="table-scroll">
+            <table className="data-table">
+                <thead className="">
                     <tr>
-                        <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Nome</th>
-                        <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Foto</th>
+                        <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Usuário</th>
+
                         <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Email</th>
                         <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Funções</th>
                         <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Partido atual</th>
@@ -42,15 +42,16 @@ export function UserTable({ users, loading, onEdit }: UserTableProps) {
                 <tbody>
                     {users.map((user) => (
                         <tr key={user.id} className="border-b border-gray-300 hover:bg-gray-50">
-                            <td className="px-6 py-3 text-sm text-gray-900">{user.name}</td>
+
                             <td className="px-6 py-3 text-sm text-gray-900">
-                                {user.photo ? (
+                                <div className="user-identity">{user.photo ? (
                                     <img src={user.photo} alt={`Foto de ${user.name}`} className="h-11 w-11 rounded-full object-cover" />
                                 ) : (
                                     <div className="flex h-11 w-11 items-center justify-center rounded-full bg-gray-200 font-semibold text-gray-600">
-                                        {user.name.charAt(0).toUpperCase()}
+                                        {user.name.split(' ').filter(Boolean).slice(0, 2).map(part => part.charAt(0)).join('').toUpperCase()}
                                     </div>
                                 )}
+                                <span className="user-name">{user.name}</span></div>
                             </td>
                             <td className="px-6 py-3 text-sm text-gray-600">{user.email}</td>
                             <td className="px-6 py-3 text-sm">

@@ -1,120 +1,55 @@
+import { isCouncilMember as hasCouncilRole, isStaff } from '../../utils/access'
+import { useState } from 'react'
 import { NavLink, Outlet, useLocation } from 'react-router'
-import { Users, Flag, Lightbulb, Clock, SignOut, House, ClockCounterClockwise, Buildings } from 'phosphor-react'
+import { Users, Flag, Lightbulb, Clock, SignOut, House, ClockCounterClockwise, Buildings, List, X, Checks } from 'phosphor-react'
 import { useAuth } from '../../hooks/auth/context'
 
 export function Layout() {
     const { logout, user } = useAuth()
-    const isCouncilMember = user?.roles.some(role => role.name === 'vereador') ?? false
-    const isAdmin = user?.roles.some(role => role.name === 'admin') ?? false
+    const [menuOpen, setMenuOpen] = useState(false)
     const location = useLocation()
-    const isVotingRoom = location.pathname.startsWith('/council/sessions/')
-
-    if (isVotingRoom) {
-        return <Outlet />
-    }
+    const isCouncilMember = hasCouncilRole(user)
+    const isAdmin = user?.roles.some(role => role.name === 'admin') ?? false
+    if (location.pathname.startsWith('/council/sessions/')) return <Outlet />
+    const links = isCouncilMember ? [
+        { to: '/council', label: 'Sessões abertas', icon: House, end: true },
+        { to: '/council/history', label: 'Histórico de sessões', icon: ClockCounterClockwise, end: false },
+    ] : isStaff(user) ? [
+        ...(isAdmin ? [{ to: '/chamber', label: 'Dados da Câmara', icon: Buildings, end: false }] : []),
+        { to: '/users', label: 'Usuários', icon: Users, end: false },
+        { to: '/parties', label: 'Partidos políticos', icon: Flag, end: false },
+        { to: '/proposals', label: 'Propostas', icon: Lightbulb, end: false },
+        { to: '/sessions', label: 'Sessões', icon: Clock, end: false },
+    ] : []
+    const currentPage = links.find(link => link.end ? location.pathname === link.to : location.pathname.startsWith(link.to))?.label ?? 'Painel'
     return (
-        <div className="flex h-screen bg-gray-50">
-            <div className="w-64 bg-white shadow-lg">
-                <div className="flex flex-col h-full">
-                    <div className="flex items-center justify-center h-16 bg-blue-600">
-                        <h1 className="text-white text-xl font-bold">Votação Eletrônica</h1>
-                    </div>
-                    <nav className="flex-1 px-4 py-6">
-                        <ul className="space-y-2">
-                            {isCouncilMember && (
-                            <>
-                            <li>
-                                <NavLink end to="/council" className={({ isActive }) => `flex items-center px-4 py-2 text-sm font-medium rounded-md transition-colors ${isActive ? 'bg-blue-100 text-blue-700' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'}`}>
-                                    <House className="mr-3 h-5 w-5" />
-                                    Sessões abertas
-                                </NavLink>
-                            </li>
-                            <li>
-                                <NavLink to="/council/history" className={({ isActive }) => `flex items-center px-4 py-2 text-sm font-medium rounded-md transition-colors ${isActive ? 'bg-blue-100 text-blue-700' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'}`}>
-                                    <ClockCounterClockwise className="mr-3 h-5 w-5" /> Histórico de sessões
-                                </NavLink>
-                            </li>
-                            </>
-                            )}
-                            {!isCouncilMember && (<>
-                            {isAdmin && <li><NavLink to="/chamber" className={({ isActive }) => `flex items-center px-4 py-2 text-sm font-medium rounded-md transition-colors ${isActive ? 'bg-blue-100 text-blue-700' : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'}`}><Buildings className="mr-3 h-5 w-5" />Dados da Câmara</NavLink></li>}
-                            <li>
-                                <NavLink
-                                    to="/users"
-                                    className={({ isActive }) =>
-                                        `flex items-center px-4 py-2 text-sm font-medium rounded-md transition-colors ${
-                                            isActive
-                                                ? 'bg-blue-100 text-blue-700'
-                                                : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
-                                        }`
-                                    }
-                                >
-                                    <Users className="mr-3 h-5 w-5" />
-                                    Usuários
-                                </NavLink>
-                            </li>
-                            <li>
-                                <NavLink
-                                    to="/parties"
-                                    className={({ isActive }) =>
-                                        `flex items-center px-4 py-2 text-sm font-medium rounded-md transition-colors ${
-                                            isActive
-                                                ? 'bg-blue-100 text-blue-700'
-                                                : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
-                                        }`
-                                    }
-                                >
-                                    <Flag className="mr-3 h-5 w-5" />
-                                    Partidos Políticos
-                                </NavLink>
-                            </li>
-                            <li>
-                                <NavLink
-                                    to="/proposals"
-                                    className={({ isActive }) =>
-                                        `flex items-center px-4 py-2 text-sm font-medium rounded-md transition-colors ${
-                                            isActive
-                                                ? 'bg-blue-100 text-blue-700'
-                                                : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
-                                        }`
-                                    }
-                                >
-                                    <Lightbulb className="mr-3 h-5 w-5" />
-                                    Propostas
-                                </NavLink>
-                            </li>
-                            <li>
-                                <NavLink
-                                    to="/sessions"
-                                    className={({ isActive }) =>
-                                        `flex items-center px-4 py-2 text-sm font-medium rounded-md transition-colors ${
-                                            isActive
-                                                ? 'bg-blue-100 text-blue-700'
-                                                : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
-                                        }`
-                                    }
-                                >
-                                    <Clock className="mr-3 h-5 w-5" />
-                                    Sessões
-                                </NavLink>
-                            </li>
-                            </>)}
-                        </ul>
-                    </nav>
-                    <div className="px-4 py-4 border-t border-gray-200">
-                        <button
-                            onClick={logout}
-                            className="flex items-center justify-center w-full px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 rounded-md hover:bg-gray-200 hover:text-gray-900 transition-colors"
-                        >
-                            <SignOut className="mr-2 h-5 w-5" />
-                            Sair
-                        </button>
-                    </div>
+        <div className="app-shell">
+            {menuOpen && <button className="sidebar-overlay" aria-label="Fechar menu" onClick={() => setMenuOpen(false)} />}
+            <aside className={`app-sidebar ${menuOpen ? 'is-open' : ''}`} aria-label="Menu principal">
+                <div className="sidebar-brand">
+                    <span className="brand-symbol"><Checks size={26} weight="bold" /></span>
+                    <div><strong>Votação Eletrônica</strong><span>Gestão legislativa</span></div>
+                    <button className="mobile-close" aria-label="Fechar menu" onClick={() => setMenuOpen(false)}><X size={22} /></button>
                 </div>
-            </div>
-
-            <div className="flex-1 overflow-auto">
-                <Outlet />
+                <nav className="sidebar-nav">
+                    <p className="sidebar-label">{isCouncilMember ? 'Área do vereador' : 'Administração'}</p>
+                    {links.map(({ to, label, icon: Icon, end }) => (
+                        <NavLink key={to} to={to} end={end} onClick={() => setMenuOpen(false)} className={({ isActive }) => `sidebar-link ${isActive ? 'is-active' : ''}`}>
+                            <Icon size={21} /><span>{label}</span>
+                        </NavLink>
+                    ))}
+                </nav>
+                <div className="sidebar-footer">
+                    <div className="sidebar-account"><span className="account-avatar">{user?.name?.charAt(0).toUpperCase() || 'U'}</span><div><strong>{user?.name || 'Minha conta'}</strong><span>{user?.roles.map(role => role.name).join(' · ') || 'Usuário'}</span></div></div>
+                    <button onClick={logout} className="sidebar-logout"><SignOut size={19} /> Sair da conta</button>
+                </div>
+            </aside>
+            <div className="app-workspace">
+                <header className="workspace-header">
+                    <div className="workspace-breadcrumb"><button className="mobile-menu" aria-label="Abrir menu" aria-expanded={menuOpen} onClick={() => setMenuOpen(true)}><List size={24} /></button><Buildings size={18} /><span>Painel legislativo</span><span className="breadcrumb-divider">/</span><strong>{currentPage}</strong></div>
+                    <span className="workspace-context">Votação Eletrônica</span>
+                </header>
+                <main className="workspace-content"><Outlet /></main>
             </div>
         </div>
     )

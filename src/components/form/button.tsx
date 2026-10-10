@@ -1,34 +1,22 @@
+import type { ReactNode } from 'react'
+import { CircleNotch } from 'phosphor-react'
+
 type ButtonProps = {
     text: string
+    icon?: ReactNode
     isLoading?: boolean
     disabled?: boolean
+    fullWidth?: boolean
     type?: 'button' | 'submit' | 'reset'
     variant?: 'primary' | 'secondary' | 'danger'
     onClick?: () => void
 }
 
-export function Button(props: ButtonProps) {
-    const isDisabled = props.disabled || props.isLoading
-    const variant = props.variant ?? 'primary'
-
-    const baseClasses = 'py-2 px-4 rounded-md cursor-pointer transition-colors duration-200 ease-in-out focus:outline-none focus:ring-0 active:scale-98'
-    const disabledClasses = isDisabled ? 'opacity-60 cursor-not-allowed' : ''
-
-    const variantClasses = {
-        primary: `bg-indigo-600 text-white hover:bg-indigo-700 ${isDisabled ? 'hover:bg-indigo-600' : ''}`,
-        secondary: `bg-gray-300 text-gray-700 hover:bg-gray-400 ${isDisabled ? 'hover:bg-gray-300' : ''}`,
-        danger: `bg-red-600 text-white hover:bg-red-700 ${isDisabled ? 'hover:bg-red-600' : ''}`
-    }
-
+export function Button({ text, icon, isLoading, disabled, fullWidth, type = 'submit', variant = 'primary', onClick }: ButtonProps) {
     return (
-        <button
-            type={props.type ?? 'submit'}
-            disabled={isDisabled}
-            onClick={props.onClick}
-            className={`${baseClasses} ${variantClasses[variant]} ${disabledClasses}`}
-            aria-busy={props.isLoading ? 'true' : 'false'}
-        >
-            {props.isLoading ? 'Carregando...' : props.text}
+        <button type={type} disabled={disabled || isLoading} onClick={onClick} className={`action-button action-button--${variant} ${fullWidth ? 'action-button--full' : ''}`} aria-busy={!!isLoading}>
+            {isLoading ? <CircleNotch size={18} className="button-spinner" aria-hidden="true" /> : icon && <span className="button-icon" aria-hidden="true">{icon}</span>}
+            <span>{isLoading ? 'Aguarde…' : text}</span>
         </button>
     )
 }

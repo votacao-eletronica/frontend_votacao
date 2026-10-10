@@ -1,6 +1,9 @@
+import { FullscreenButton } from '../components/ui/FullscreenButton'
+import { isAxiosError } from 'axios'
+import { Button } from '../components/form/button'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router'
-import { ArrowLeft, CaretLeft, CaretRight, Check, Hand, Minus, Users, X } from 'phosphor-react'
+import { CircleNotch, WarningCircle, ClipboardText, ArrowClockwise, ArrowLeft, CaretLeft, CaretRight, Check, Hand, Minus, Users, X } from 'phosphor-react'
 import { toast } from 'react-toastify'
 import { councilService } from '../services/councilService'
 import type { CouncilMember, CouncilSession, VotingChoice } from '../types/Council'
@@ -16,6 +19,9 @@ const choices: Array<{ value: VotingChoice; label: string; icon: typeof Check; s
 export function VotingRoom() {
     const { id } = useParams()
     const sessionId = Number(id)
+    const [entryError, setEntryError] = useState<string | null>(null)
+    const [entryAttempt, setEntryAttempt] = useState(0)
+    const [refreshing, setRefreshing] = useState(false)
     const [session, setSession] = useState<CouncilSession | null>(null)
     const [onlineMembers, setOnlineMembers] = useState<CouncilMember[]>([])
     const [currentIndex, setCurrentIndex] = useState(0)
@@ -23,6 +29,11 @@ export function VotingRoom() {
     const [requestingSpeech, setRequestingSpeech] = useState(false)
     const [speechRequested, setSpeechRequested] = useState(false)
     const navigate = useNavigate()
+    useEffect(() => {
+        if (!speechRequested) return
+        const timer = window.setTimeout(() => setSpeechRequested(false), 10000)
+        return () => window.clearTimeout(timer)
+    }, [speechRequested])
     const isSessionLoaded = session !== null
 
     const load = useCallback(async () => setSession(await councilService.getSession(sessionId)), [sessionId])
@@ -31,16 +42,20 @@ export function VotingRoom() {
         let active = true
         async function enter() {
             try {
+                setEntryError(null)
+                setSession(null)
                 await councilService.enterSession(sessionId)
-                if (active) await load()
+                if (!active) return
+                const data = await councilService.getSession(sessionId)
+                if (active) { setSession(data); setCurrentIndex(0) }
             } catch (error) {
-                toast.error(error instanceof Error ? error.message : 'Não foi possível entrar na sessão.')
-                navigate('/council')
+                if (!active) return
+                setEntryError(isAxiosError(error) ? error.response?.data?.message || 'Não foi possível conectar à sessão. Verifique sua conexão e tente novamente.' : 'Não foi possível entrar na sessão. Tente novamente.')
             }
         }
         enter()
         return () => { active = false }
-    }, [load, navigate, sessionId])
+    }, [entryAttempt, sessionId])
 
     useEffect(() => {
         const { token } = getStoredAuth()
@@ -99,7 +114,31 @@ export function VotingRoom() {
         }
     }
 
-    if (!session || !currentProposal) return <div className="min-h-screen bg-gray-50 p-8 text-gray-500">Entrando na sessão...</div>
+    async function refreshSession() {
+        setRefreshing(true)
+        try { await load() } catch { toast.error('Não foi possível atualizar a sessão. Tente novamente.') }
+        finally { setRefreshing(false) }
+    }
+
+    if (!session || !currentProposal) {
+        const waiting = !!session && !entryError
+        return (
+            <main className="session-entry-page">
+                <header className="session-entry-header"><span>Plenário digital</span><Button text="Voltar às sessões" variant="secondary" type="button" icon={<ArrowLeft size={17} />} onClick={() => navigate('/council')} /></header>
+                <section className="session-entry-card" aria-labelledby="session-entry-title">
+                    <div className={`session-entry-symbol ${entryError ? 'is-error' : ''}`} aria-hidden="true">
+                        {entryError ? <WarningCircle size={32} /> : waiting ? <ClipboardText size={32} /> : <CircleNotch size={32} className="button-spinner" />}
+                    </div>
+                    <p className="page-eyebrow">{session?.title || 'Sessão legislativa'}</p>
+                    <h1 id="session-entry-title">{entryError ? 'Não foi possível entrar' : waiting ? 'Aguardando propostas' : 'Entrando na sessão'}</h1>
+                    <p className="session-entry-description" role={entryError ? 'alert' : 'status'}>{entryError || (waiting ? 'A sessão está aberta, mas ainda não há propostas disponíveis. Atualize para consultar a pauta.' : 'Estamos registrando sua presença e carregando as informações da sessão. Aguarde um instante.')}</p>
+                    {!entryError && !waiting && <div className="session-entry-progress" aria-hidden="true"><span /></div>}
+                    {(entryError || waiting) && <div className="session-entry-actions"><Button text={entryError ? 'Tentar novamente' : 'Atualizar propostas'} type="button" icon={<ArrowClockwise size={18} />} isLoading={refreshing} onClick={entryError ? () => setEntryAttempt(value => value + 1) : refreshSession} /><Button text="Voltar às sessões" type="button" variant="secondary" onClick={() => navigate('/council')} /></div>}
+                    <p className="session-entry-footnote">Votação Eletrônica · Área do vereador</p>
+                </section>
+            </main>
+        )
+    }
 
     return (
         <main className="min-h-screen bg-gray-50 text-gray-900">
@@ -110,9 +149,10 @@ export function VotingRoom() {
                         <p className="text-xs font-bold uppercase tracking-wider text-blue-600">Sessão ao vivo</p>
                         <h1 className="font-bold">{session.title}</h1>
                     </div>
+                    <div className="flex items-center gap-3"><FullscreenButton />
                     <button disabled={requestingSpeech || speechRequested} onClick={requestSpeech} className="flex items-center gap-2 rounded-md bg-blue-600 px-4 py-2 text-sm font-bold text-white hover:bg-blue-700 disabled:opacity-60">
                         <Hand weight="fill" /> {speechRequested ? 'Pedido enviado' : 'Pedir para falar'}
-                    </button>
+                    </button></div>
                 </div>
             </header>
 

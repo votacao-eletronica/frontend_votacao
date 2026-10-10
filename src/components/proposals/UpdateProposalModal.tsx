@@ -1,3 +1,4 @@
+import { Check } from 'phosphor-react'
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -56,12 +57,13 @@ export function UpdateProposalModal({ isOpen, onClose, onSuccess, proposal }: Up
     }
 
     return (
-        <Modal isOpen={isOpen} onClose={onClose} title="Atualizar Proposta">
+        <Modal isOpen={isOpen} onClose={onClose} title="Atualizar Proposta" description="Revise as informações e salve as alterações da proposta.">
             <form onSubmit={handleSubmit(onSubmit)}>
                 <div className="mb-4">
                     <Input
                         name="title"
                         label="Título"
+                        placeholder="Informe um título claro e objetivo"
                         formRegister={register('title')}
                         caption={errors.title?.message}
                     />
@@ -70,7 +72,8 @@ export function UpdateProposalModal({ isOpen, onClose, onSuccess, proposal }: Up
                     <Select
                         name="voting_session_id"
                         label="Sessão"
-                        formRegister={register('voting_session_id', { valueAsNumber: true })}
+                        hint="Opcional. Vincule a proposta a uma sessão legislativa."
+                        formRegister={register('voting_session_id', { setValueAs: (value) => value ? Number(value) : undefined })}
                         options={[{ value: '', label: 'Selecione' }, ...sessions.map(session => ({ value: session.id, label: session.title }))]}
                         caption={errors.voting_session_id?.message}
                     />
@@ -79,12 +82,13 @@ export function UpdateProposalModal({ isOpen, onClose, onSuccess, proposal }: Up
                     <Input
                         name="description"
                         label="Descrição"
+                        placeholder="Descreva o conteúdo e os objetivos da proposta…"
                         multiline
                         formRegister={register('description')}
                         caption={errors.description?.message}
                     />
                 </div>
-                <div className="flex justify-end space-x-2">
+                <div className="form-actions">
                     <Button
                         text="Cancelar"
                         variant="secondary"
@@ -92,7 +96,8 @@ export function UpdateProposalModal({ isOpen, onClose, onSuccess, proposal }: Up
                         onClick={onClose}
                     />
                     <Button
-                        text="Atualizar"
+                        text="Salvar alterações"
+                        icon={<Check size={17} weight="bold" />}
                         isLoading={loading}
                         disabled={loading}
                         type="submit"

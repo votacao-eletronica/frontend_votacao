@@ -1,3 +1,4 @@
+import { Plus } from 'phosphor-react'
 import { useState } from 'react'
 import { useUsers } from '../hooks/users/useUsers'
 import { useDeleteUser } from '../hooks/users/useDeleteUser'
@@ -26,11 +27,12 @@ export function Users() {
     }
 
     return (
-        <div className="h-full bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-6xl mx-auto">
-                <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                    <h1 className="text-3xl font-bold text-gray-900">Usuários</h1>
+        <div className="listing-page">
+            <div className="listing-container">
+                <div className="listing-heading">
+                    <div><p className="page-eyebrow">Gestão legislativa</p><h1 className="page-title">Usuários</h1><p className="page-description">Gerencie os usuários, suas funções e filiações partidárias.</p></div>
                     <Button
+                        icon={<Plus size={18} weight="bold" />}
                         text="Criar Usuário"
                         type="button"
                         onClick={() => setIsCreateModalOpen(true)}
@@ -43,7 +45,7 @@ export function Users() {
                     </div>
                 )}
 
-                <div className="bg-white rounded-lg shadow">
+                <div className="data-card">
                     <UserTable users={users} loading={loading} onEdit={handleEdit} onDelete={handleDelete} />
                     <Pagination meta={pagination} loading={loading} onPageChange={setPage} />
                 </div>

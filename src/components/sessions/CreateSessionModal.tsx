@@ -1,3 +1,4 @@
+import { Plus } from 'phosphor-react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -43,12 +44,13 @@ export function CreateSessionModal({ isOpen, onClose, onSuccess }: CreateSession
     }
 
     return (
-        <Modal isOpen={isOpen} onClose={onClose} title="Criar Sessão">
+        <Modal isOpen={isOpen} onClose={onClose} title="Criar Sessão" description="Defina o título e a data da nova sessão legislativa.">
             <form onSubmit={handleSubmit(onSubmit)}>
                 <div className="mb-4">
                     <Input
                         name="title"
                         label="Título"
+                        placeholder="Informe um título claro e objetivo"
                         formRegister={register('title')}
                         caption={errors.title?.message}
                     />
@@ -62,7 +64,7 @@ export function CreateSessionModal({ isOpen, onClose, onSuccess }: CreateSession
                         caption={errors.date?.message}
                     />
                 </div>
-                <div className="flex justify-end space-x-2">
+                <div className="form-actions">
                     <Button
                         text="Cancelar"
                         variant="secondary"
@@ -71,6 +73,7 @@ export function CreateSessionModal({ isOpen, onClose, onSuccess }: CreateSession
                     />
                     <Button
                         text="Criar"
+                        icon={<Plus size={17} weight="bold" />}
                         isLoading={loading}
                         disabled={loading}
                         type="submit"

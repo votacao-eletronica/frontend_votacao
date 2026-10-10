@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useMemo, useState, type PropsWithChildren } from 'react'
+import { createContext, useEffect, useCallback, useContext, useMemo, useState, type PropsWithChildren } from 'react'
 import axios from 'axios'
 import { toast } from 'react-toastify'
 import { ToastError } from '../../components/alert/toastError'
@@ -16,6 +16,7 @@ type Credentials = {
 type AuthContextData = {
     token: string | null
     user: User | null
+    checkingProfile: boolean
     isAuthenticated: boolean
     login: (credentials: Credentials) => Promise<void>
     logout: () => void
@@ -27,6 +28,23 @@ export function AuthProvider({ children }: PropsWithChildren) {
     const [storedAuth] = useState<AuthData>(() => getStoredAuth())
     const [token, setToken] = useState<string | null>(storedAuth.token)
     const [user, setUser] = useState<User | null>(storedAuth.user)
+
+    const [checkingProfile, setCheckingProfile] = useState(Boolean(storedAuth.token))
+    useEffect(() => {
+        if (!storedAuth.token) return
+        let active = true
+        createApiInstance().get<{ data: User }>('/me').then(response => {
+            if (!active) return
+            setUser(response.data.data)
+            setStoreAuthData({ token: storedAuth.token, user: response.data.data })
+        }).catch(() => {
+            if (!active) return
+            removeStoredAuthData()
+            setToken(null)
+            setUser(null)
+        }).finally(() => { if (active) setCheckingProfile(false) })
+        return () => { active = false }
+    }, [storedAuth.token])
 
     const login = useCallback(async ({ email, password }: Credentials) => {
         try {
@@ -65,8 +83,8 @@ export function AuthProvider({ children }: PropsWithChildren) {
     const isAuthenticated = useMemo(() => Boolean(token), [token])
 
     const value = useMemo(
-        () => ({ token, user, isAuthenticated, login, logout }),
-        [token, user, isAuthenticated, login, logout]
+        () => ({ token, user, isAuthenticated, checkingProfile, login, logout }),
+        [token, user, isAuthenticated, checkingProfile, login, logout]
     )
 
     return (

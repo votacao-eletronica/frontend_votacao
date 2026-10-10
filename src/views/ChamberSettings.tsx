@@ -34,7 +34,7 @@ export function ChamberSettings() {
 
     return <main className="min-h-full bg-gray-50 px-4 py-8 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl">
-            <div className="mb-8 flex items-center gap-3"><Buildings size={34} className="text-blue-600" /><div><h1 className="text-3xl font-bold text-gray-900">Dados da Câmara</h1><p className="text-gray-600">Essas informações aparecem no cabeçalho das atas em PDF.</p></div></div>
+            <div className="mb-8 flex items-center gap-3"><Buildings size={34} className="text-blue-600" /><div><h1 className="text-3xl font-bold text-gray-900">Dados da Câmara</h1><p className="text-gray-600">O nome e o brasão aparecem na tela de login e no cabeçalho das atas em PDF.</p></div></div>
             <form onSubmit={submit} className="rounded-lg bg-white p-6 shadow">
                 <label className="block text-sm font-semibold text-gray-700">Nome da Câmara</label>
                 <input value={name} onChange={event => setName(event.target.value)} required maxLength={255} className="mt-1 w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100" />

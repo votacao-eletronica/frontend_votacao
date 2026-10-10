@@ -1,3 +1,4 @@
+import { FullscreenButton } from '../components/ui/FullscreenButton'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate, useParams } from 'react-router'
 import {
@@ -5,6 +6,7 @@ import {
     CaretLeft,
     CaretRight,
     Clock,
+    Hand,
     Users,
     XCircle,
 } from 'phosphor-react'
@@ -56,6 +58,10 @@ export function SessionPresentation() {
     const { id } = useParams<{ id: string }>()
     const sessionId = Number(id)
     const navigate = useNavigate()
+    const [speechUntil, setSpeechUntil] = useState<Record<number, number>>({})
+    const [onlineIds, setOnlineIds] = useState<number[]>([])
+    const [presenceError, setPresenceError] = useState(false)
+    const [presenceReady, setPresenceReady] = useState(false)
     const [session, setSession] = useState<SessionHistory | null>(null)
     const [currentIndex, setCurrentIndex] = useState(0)
     const [now, setNow] = useState(() => new Date())
@@ -87,7 +93,20 @@ export function SessionPresentation() {
     }, [sessionId])
 
     useEffect(() => {
-        load()
+        let active = true
+        let timer: number | undefined
+        async function refresh() {
+            if (document.visibilityState === 'visible') await load()
+            if (active) timer = window.setTimeout(refresh, 5000)
+        }
+        void refresh()
+        const onVisible = () => { if (document.visibilityState === 'visible') void load() }
+        document.addEventListener('visibilitychange', onVisible)
+        return () => {
+            active = false
+            window.clearTimeout(timer)
+            document.removeEventListener('visibilitychange', onVisible)
+        }
     }, [load])
 
     useEffect(() => {
@@ -101,11 +120,23 @@ export function SessionPresentation() {
 
         const echo = getEcho(token)
         const channelName = `voting-session.${sessionId}`
+        setSpeechUntil({})
+        setOnlineIds([])
+        setPresenceReady(false)
+        setPresenceError(false)
         const channel = echo.join(channelName)
 
         channel
+            .error(() => { setPresenceError(true); setOnlineIds([]) })
+            .here((members: { id: number }[]) => { setOnlineIds(members.map(member => Number(member.id))); setPresenceReady(true); setPresenceError(false) })
+            .joining((member: { id: number }) => { setOnlineIds(ids => [...new Set([...ids, Number(member.id)])]); void load() })
+            .leaving((member: { id: number }) => setOnlineIds(ids => ids.filter(id => id !== Number(member.id))))
             .listen('.vote.cast', (event: VoteCastPayload) => {
                 load(getVotedPropositionId(event ?? {}))
+            })
+            .listen('.speech.requested', (event: { user?: { id?: unknown } }) => {
+                const userId = parseNumericId(event.user?.id)
+                if (userId) setSpeechUntil(current => ({ ...current, [userId]: Date.now() + 10000 }))
             })
             .listen('.attendance.created', load)
             .listen('.session.closed', load)
@@ -120,6 +151,7 @@ export function SessionPresentation() {
         return votes
     }, [proposition])
 
+    const connectedAttendees = session?.attendees.filter(attendee => onlineIds.includes(Number(attendee.id))) ?? []
     const totalVoters = proposition?.nominal_votes.length ?? 0
     const totalAttendees = session?.attendees.length ?? 0
     const voteTotals = proposition?.votes ?? { yes: 0, no: 0, abstentions: 0, total: 0 }
@@ -157,6 +189,7 @@ export function SessionPresentation() {
                     </div>
 
                     <div className="flex min-w-36 items-center justify-end gap-2 font-mono text-xl font-bold text-gray-700">
+                        <FullscreenButton />
                         <Clock size={22} className="text-blue-600" /> {formatTime(now)}
                     </div>
                 </div>
@@ -195,14 +228,17 @@ export function SessionPresentation() {
                     </div>
                 </div>
 
+                <p className="mb-4 text-sm text-gray-500" role="status">{presenceReady ? `${connectedAttendees.length} vereador(es) conectado(s) agora` : presenceError ? 'Não foi possível conectar à presença ao vivo. Atualize a página para tentar novamente.' : 'Conectando à presença ao vivo…'}</p>
+                {presenceReady && connectedAttendees.length === 0 && <div className="mb-4 rounded-lg border border-dashed border-gray-200 bg-white p-8 text-center text-gray-500">Nenhum vereador conectado à votação neste momento.</div>}
                 <div className="grid flex-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
-                    {session.attendees.map(attendee => {
+                    {connectedAttendees.map(attendee => {
                         const vote = voteByUserId.get(attendee.id)
                         const cardStyle = vote ? voteCardStyles[vote.vote] : pendingCardStyle
                         const party = vote?.user_party ?? attendee.party
 
                         return (
-                            <article key={attendee.id} className={`flex min-h-36 items-center gap-4 rounded-lg border p-4 shadow-sm transition-colors duration-500 ${cardStyle}`}>
+                            <article key={attendee.id} className={`relative flex min-h-36 items-center gap-4 rounded-lg border p-4 shadow-sm transition-colors duration-500 ${cardStyle}`}>
+                                {speechUntil[attendee.id] > now.getTime() && <span className="speech-hand-badge" role="status" aria-label={`${attendee.name} pediu a palavra`} title="Pediu a palavra"><Hand size={23} weight="fill" /><span>Pediu a palavra</span></span>}
                                 {attendee.photo ? (
                                     <img src={attendee.photo} alt={`Foto de ${attendee.name}`} className="h-20 w-20 shrink-0 rounded-md object-cover shadow-sm" />
                                 ) : (

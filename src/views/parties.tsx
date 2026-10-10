@@ -1,3 +1,4 @@
+import { Plus } from 'phosphor-react'
 import { useState } from 'react'
 import { useParties } from '../hooks/parties/useParties'
 import { PoliticalPartyTable } from '../components/parties/PoliticalPartyTable'
@@ -10,11 +11,12 @@ export function Parties() {
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
 
     return (
-        <div className="h-full bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-6xl mx-auto">
-                <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                    <h1 className="text-3xl font-bold text-gray-900">Partidos Políticos</h1>
+        <div className="listing-page">
+            <div className="listing-container">
+                <div className="listing-heading">
+                    <div><p className="page-eyebrow">Gestão legislativa</p><h1 className="page-title">Partidos Políticos</h1><p className="page-description">Organize os partidos e suas representações na Câmara.</p></div>
                     <Button
+                        icon={<Plus size={18} weight="bold" />}
                         text="Criar Partido"
                         variant="primary"
                         type="button"
@@ -28,7 +30,7 @@ export function Parties() {
                     </div>
                 )}
 
-                <div className="bg-white rounded-lg shadow">
+                <div className="data-card">
                     <PoliticalPartyTable parties={parties} loading={loading} />
                     <Pagination meta={pagination} loading={loading} onPageChange={setPage} />
                 </div>
